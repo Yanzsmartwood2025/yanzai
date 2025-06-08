@@ -10,39 +10,69 @@
         body { font-family: 'Inter', sans-serif; }
         .loader {
             width: 48px; height: 48px; border: 5px solid;
-            border-color: #4f46e5 transparent;
+            border-color: #ffffff transparent;
             border-radius: 50%; display: inline-block;
             animation: rotation 1s linear infinite;
         }
         @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* Efecto de superposición oscura para la imagen de fondo */
+        .bg-overlay::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5); /* Ajusta la opacidad aquí (0.5 es 50%) */
+            z-index: 0;
+        }
     </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-    <div class="min-h-screen w-full flex flex-col items-center p-4 sm:p-6">
-        <div class="w-full max-w-3xl mx-auto text-center py-12">
-            <div class="inline-flex items-center justify-center bg-indigo-100 dark:bg-indigo-900/50 p-2 rounded-full mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600 dark:text-indigo-400"><path d="M12 15a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1h-1a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h1Z"/><path d="M2 15h2"/><path d="M20 15h2"/><path d="m14 19-3 3-3-3"/><path d="M11 22v-3.2a1.8 1.8 0 0 1 1.8-1.8h.4a1.8 1.8 0 0 1 1.8 1.8V22"/><path d="M11 2v3.2a1.8 1.8 0 0 0 1.8 1.8h.4a1.8 1.8 0 0 0 1.8-1.8V2"/></svg>
-            </div>
-            <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-800 dark:text-white tracking-tight">
-              Asesora de Diseño IA: Aria
-            </h1>
-            <p class="mt-4 text-lg text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
-              Describa su visión. Generaré un concepto profesional con una visualización fotorrealista para su proyecto.
-            </p>
-            <div class="mt-8 flex flex-col sm:flex-row items-center gap-3 w-full">
-              <input id="prompt-input" type="text" placeholder="Ej: una cocina de isla con acabados en nogal y cuarzo" class="w-full px-5 py-4 text-base bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none transition duration-200" />
-              <button id="generate-button" class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-4 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400 disabled:cursor-not-allowed transition-all duration-200">
-                <span id="button-content"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block mr-2"><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h18"/><path d="M17 19H7"/><path d="m12 12 1.5 3L15 12l-1.5-3L12 12z"/><path d="M6 3v4"/><path d="M21 17v4"/><path d="M3 11h18"/><path d="M7 19h1.5"/><path d="M15.5 19H17"/></svg> Generar Concepto</span>
-              </button>
-            </div>
-            <div id="error-message" class="mt-4 text-red-500 font-medium"></div>
-            <div id="loading-state" class="mt-10 hidden">
-                <div class="loader"></div>
-                <p id="loading-message" class="text-gray-600 dark:text-gray-400 font-medium text-lg mt-4"></p>
-            </div>
-            <div id="result-container"></div>
-        </div>
+<body class="bg-black text-white">
+
+    <div class="fixed top-0 left-0 w-full h-full z-[-1] bg-overlay">
+        <img src="URL_DE_TU_IMAGEN_DE_FONDO" alt="Imagen de Fondo" class="object-cover w-full h-full">
     </div>
+
+    <header class="absolute top-0 left-0 right-0 p-5 flex justify-between items-center z-10">
+        <div>
+            <img src="URL_DE_TU_LOGO" alt="YAN'Z SMART WOOD Logo" class="h-10">
+        </div>
+        <div class="hidden sm:flex items-center gap-2">
+            <button class="bg-transparent text-white border border-white/50 rounded-md px-4 py-2 text-sm font-semibold hover:bg-white hover:text-black transition-all duration-200">Generar</button>
+            <button class="bg-transparent text-white border border-white/50 rounded-md px-4 py-2 text-sm font-semibold hover:bg-white hover:text-black transition-all duration-200">Concepto</button>
+        </div>
+    </header>
+
+    <div class="relative min-h-screen w-full flex flex-col items-center justify-center p-4 sm:p-6 text-center">
+        
+        <div class="relative z-10 w-full max-w-3xl">
+            <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-shadow">
+                Asesora de Diseño IA: Aria
+            </h1>
+            <p class="mt-4 text-lg text-gray-300 max-w-xl mx-auto text-shadow-sm">
+                Describa su visión. Generaré un concepto profesional con una visualización fotorrealista para su proyecto.
+            </p>
+            
+            <div class="mt-8 flex flex-col sm:flex-row items-center gap-3 w-full max-w-xl mx-auto">
+                <input id="prompt-input" type="text" placeholder="Ej: una cocina de isla con acabados en nogal y cuarzo" class="w-full px-5 py-4 text-base bg-white/10 border border-gray-500 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none transition duration-200 placeholder:text-gray-400" />
+                
+                <button id="generate-button" class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-4 bg-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400 disabled:cursor-not-allowed transition-all duration-200">
+                    <span id="button-content">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block mr-2"><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h18"/><path d="M17 19H7"/><path d="m12 12 1.5 3L15 12l-1.5-3L12 12z"/><path d="M6 3v4"/><path d="M21 17v4"/><path d="M3 11h18"/><path d="M7 19h1.5"/><path d="M15.5 19H17"/></svg>
+                        Generar Concepto
+                    </span>
+                </button>
+            </div>
+            
+            <div id="error-message" class="mt-4 text-red-400 font-medium"></div>
+        </div>
+
+        <div id="loading-state" class="mt-10 hidden relative z-10">
+            <div class="loader"></div>
+            <p id="loading-message" class="text-gray-300 font-medium text-lg mt-4"></p>
+        </div>
+        <div id="result-container" class="w-full max-w-3xl relative z-10"></div>
+    </div>
+
     <script>
         const promptInput = document.getElementById('prompt-input');
         const generateButton = document.getElementById('generate-button');
@@ -109,13 +139,13 @@
             const imageUrl = `https://image.pollinations.ai/prompt/professional%20interior%20design%20photo,8k,photorealistic,${encodeURIComponent(title + ". " + originalPrompt)}`;
             const descriptionHTML = description.replace(/\n/g, '<br><br>');
             resultContainer.innerHTML = `
-                <div class="mt-10 w-full bg-white dark:bg-gray-800/50 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 animate-fade-in overflow-hidden">
-                    <div class="bg-gray-100 dark:bg-gray-900/50 flex items-center justify-center p-4 min-h-[300px] sm:min-h-[450px]">
+                <div class="mt-10 w-full bg-black/50 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-700 animate-fade-in overflow-hidden">
+                    <div class="bg-black/30 flex items-center justify-center p-4 min-h-[300px] sm:min-h-[450px]">
                         <img src="${imageUrl}" alt="Visualización del diseño" class="rounded-lg object-cover shadow-lg max-h-[450px]" />
                     </div>
                     <div class="p-6 sm:p-8 text-left">
-                        <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">${title}</h2>
-                        <div class="text-gray-600 dark:text-gray-300 space-y-4 leading-relaxed">${descriptionHTML}</div>
+                        <h2 class="text-2xl font-bold text-white mb-4">${title}</h2>
+                        <div class="text-gray-300 space-y-4 leading-relaxed">${descriptionHTML}</div>
                     </div>
                 </div>`;
         }
