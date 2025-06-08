@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YAN'Z SMART WOOD - Diseño Moderno e Inteligente</title>
+    <title>Asesor de Diseño IA - YAN'Z SMART WOOD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -80,11 +80,12 @@
                 const result = await response.json();
                 
                 if(result.error) throw new Error(result.error);
-                
-                setLoading(true, 'Generando visualización fotorrealista...');
-                // The image URL is now directly usable from the API response
+
+                // Construye la URL de la imagen aquí en el cliente
+                const imageUrl = `https://image.pollinations.ai/prompt/professional%20interior%20design%20photo,8k,photorealistic,${encodeURIComponent(result.title + ". " + query)}`;
+
                 setLoading(false);
-                displayDesignResult(result);
+                displayDesignResult({ ...result, imageUrl });
 
             } catch (err) {
                 setLoading(false);
