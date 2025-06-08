@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -39,7 +39,8 @@
 
     <!-- Contenedor de la Imagen de Fondo -->
     <div class="fixed top-0 left-0 w-full h-full z-[-1]">
-        <img src="Aria.jpg" alt="Imagen de Fondo" class="animated-avatar object-cover w-full h-full">
+        <!-- CAMBIO CLAVE: Se ha añadido "object-left" para alinear la imagen -->
+        <img src="Picsart_25-06-08_08-29-02-928.jpg" alt="Imagen de Fondo" class="animated-avatar object-cover object-left sm:object-center w-full h-full">
     </div>
     <!-- Capa de gradiente oscuro desde abajo -->
     <div class="bg-overlay fixed top-0 left-0 w-full h-full z-[-1]"></div>
@@ -56,11 +57,10 @@
         </div>
     </header>
 
-    <!-- Contenido Principal - NUEVA POSICIÓN INFERIOR Y MÁS PEQUEÑO -->
+    <!-- Contenido Principal -->
     <div class="relative w-full min-h-screen flex flex-col items-center justify-end text-center">
         
         <div class="relative z-10 w-full max-w-lg p-4 mb-10 sm:mb-16">
-            <!-- TAMAÑOS DE LETRA AJUSTADOS -->
             <h1 class="font-display text-3xl sm:text-4xl font-bold tracking-tight text-shadow-strong">
                 Aria
             </h1>
@@ -83,12 +83,12 @@
             <div id="error-message" class="mt-3 text-red-400 font-medium text-sm"></div>
         </div>
 
-        <!-- El contenedor de resultados se posiciona en el centro cuando aparece -->
+        <!-- Contenedor de resultados -->
         <div id="result-wrapper" class="absolute top-0 left-0 w-full h-full flex items-center justify-center p-4 hidden">
              <div id="result-container" class="w-full max-w-3xl"></div>
         </div>
 
-
+        <!-- Estado de carga -->
         <div id="loading-state" class="absolute inset-0 flex flex-col items-center justify-center bg-black/50 hidden z-20">
             <div class="loader"></div>
             <p id="loading-message" class="text-gray-300 font-medium text-lg mt-4"></p>
@@ -182,8 +182,8 @@
             const imageUrl = `https://image.pollinations.ai/prompt/professional%20interior%20design%20photo,8k,photorealistic,${encodeURIComponent(title + ". " + originalPrompt)}`;
             const descriptionHTML = description.replace(/\n/g, '<br><br>');
 
-            mainContent.style.display = 'none'; // Oculta el contenido principal
-            resultWrapper.classList.remove('hidden'); // Muestra el contenedor de resultados
+            mainContent.parentElement.style.display = 'none'; // Oculta el contenedor del contenido principal
+            resultWrapper.classList.remove('hidden'); 
 
             resultContainer.innerHTML = `
                 <div class="w-full bg-black/60 backdrop-blur-md rounded-2xl shadow-xl border border-gray-700 animate-fade-in overflow-hidden">
@@ -202,4 +202,4 @@
     </script>
 </body>
 </html>
-                           
+                               
