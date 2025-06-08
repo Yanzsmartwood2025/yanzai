@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -39,27 +39,22 @@
 
     <!-- Contenedor de la Imagen de Fondo -->
     <div class="fixed top-0 left-0 w-full h-full z-[-1]">
-        <!-- CAMBIO CLAVE: Reemplaza esta URL con el enlace directo que copiaste de GitHub -->
-        <img src="URL_DIRECTA_DE_GITHUB_AQUI" alt="Imagen de Fondo" class="animated-avatar object-cover object-left sm:object-center w-full h-full">
+        <!-- ENLACE DIRECTO Y CORREGIDO A LA IMAGEN EN GITHUB -->
+        <img src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai.vercel.app/main/Picsart_25-06-08_08-29-02-928.jpg" alt="Asesora de Diseño Aria" class="animated-avatar object-cover object-left sm:object-center w-full h-full">
     </div>
     <div class="bg-overlay fixed top-0 left-0 w-full h-full z-[-1]"></div>
 
 
-    <!-- Header con Logo y Botones -->
+    <!-- Header con Logo -->
     <header class="absolute top-0 left-0 right-0 p-4 sm:p-5 flex justify-between items-center z-10">
         <div>
-            <!-- Asegúrate de que esta ruta también sea correcta. Si falla, usa el mismo método de la URL directa. -->
-            <img src="logoyanz.png" alt="YAN'Z SMART WOOD Logo" class="h-8 sm:h-10">
-        </div>
-        <div class="hidden sm:flex items-center gap-4">
-            <button class="pill-button text-xs py-2">Generar</button>
-            <button class="pill-button text-xs py-2">Concepto</button>
+            <!-- ENLACE DIRECTO Y CORREGIDO AL LOGO EN GITHUB -->
+            <img src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai.vercel.app/main/logoyanz.png" alt="Logo YAN'Z SMART WOOD" class="h-8 sm:h-10">
         </div>
     </header>
 
     <!-- Contenido Principal -->
     <div class="relative w-full min-h-screen flex flex-col items-center justify-end text-center">
-        
         <div class="relative z-10 w-full max-w-lg p-4 mb-10 sm:mb-16">
             <h1 class="font-display text-3xl sm:text-4xl font-bold tracking-tight text-shadow-strong">
                 Aria
@@ -67,11 +62,9 @@
             <p class="mt-1 text-sm text-gray-200">
                 Tu asesora de diseño IA.
             </p>
-            
             <div class="mt-5 w-full">
                 <input id="prompt-input" type="text" placeholder="Describe tu visión..." class="w-full px-5 py-3 text-sm bg-white/10 border border-gray-500 rounded-full focus:ring-2 focus:ring-indigo-400 focus:outline-none transition duration-200 placeholder:text-gray-400" />
             </div>
-            
             <div class="mt-4">
                 <button id="generate-button" class="pill-button disabled:bg-white/20 disabled:cursor-not-allowed disabled:text-gray-400 disabled:border-gray-500">
                     <span id="button-content">
@@ -79,7 +72,6 @@
                     </span>
                 </button>
             </div>
-            
             <div id="error-message" class="mt-3 text-red-400 font-medium text-sm"></div>
         </div>
 
@@ -94,6 +86,7 @@
     </div>
 
     <script>
+        // Tu JavaScript se mantiene igual
         const mainContent = document.querySelector('.relative.z-10.w-full.max-w-lg');
         const resultWrapper = document.getElementById('result-wrapper');
         const promptInput = document.getElementById('prompt-input');
