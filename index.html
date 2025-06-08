@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asesor de Diseño IA - YAN'Z SMART WOOD</title>
+    <title>Asesora de Diseño IA: Aria - YAN'Z SMART WOOD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -18,21 +18,26 @@
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+
     <div class="min-h-screen w-full flex flex-col items-center p-4 sm:p-6">
         <div class="w-full max-w-3xl mx-auto text-center py-12">
-            <div class="inline-flex items-center justify-center bg-indigo-100 dark:bg-indigo-900/50 p-2 rounded-full mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600 dark:text-indigo-400"><path d="M12 15a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1h-1a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h1Z"/><path d="M2 15h2"/><path d="M20 15h2"/><path d="m14 19-3 3-3-3"/><path d="M11 22v-3.2a1.8 1.8 0 0 1 1.8-1.8h.4a1.8 1.8 0 0 1 1.8 1.8V22"/><path d="M11 2v3.2a1.8 1.8 0 0 0 1.8 1.8h.4a1.8 1.8 0 0 0 1.8-1.8V2"/></svg>
+            
+            <div class="mb-6 flex flex-col items-center gap-6">
+                <img src="logoyanz.png" alt="Logo YAN'Z SMART WOOD" class="mx-auto h-20 w-auto" onerror="this.onerror=null;this.src='https://placehold.co/150x80?text=YAN_Z';">
+                <img src="Aria.jpg" alt="Foto de la asesora de diseño Aria" class="w-40 h-40 object-cover rounded-full mx-auto shadow-lg border-4 border-white dark:border-gray-800" onerror="this.onerror=null;this.src='https://placehold.co/160x160/7ca1d4/ffffff?text=Aria';">
             </div>
+
             <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-800 dark:text-white tracking-tight">
               Asesora de Diseño IA: Aria
             </h1>
             <p class="mt-4 text-lg text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
               Describa su visión. Generaré un concepto profesional con una visualización fotorrealista para su proyecto.
             </p>
+            
             <div class="mt-8 flex flex-col sm:flex-row items-center gap-3 w-full">
-              <input id="prompt-input" type="text" placeholder="Ej: una cocina de isla con acabados en nogal y cuarzo" class="w-full px-5 py-4 text-base bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none transition duration-200" />
-              <button id="generate-button" class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-4 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400 disabled:cursor-not-allowed transition-all duration-200">
-                <span id="button-content"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block mr-2"><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h18"/><path d="M17 19H7"/><path d="m12 12 1.5 3L15 12l-1.5-3L12 12z"/><path d="M6 3v4"/><path d="M21 17v4"/><path d="M3 11h18"/><path d="M7 19h1.5"/><path d="M15.5 19H17"/></svg> Generar Concepto</span>
+              <input id="prompt-input" type="text" placeholder="Ej: una cocina de isla con acabados en nogal y cuarzo" class="w-full px-5 py-4 text-base bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none transition duration-200" />
+              <button id="generate-button" class="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-br from-indigo-600 to-indigo-700 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 ease-in-out disabled:bg-indigo-400 disabled:cursor-not-allowed disabled:shadow-lg disabled:scale-100">
+                <span id="button-content"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block mr-2"><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h18"/><path d="M17 19H7"/><path d="m12 12 1.5 3L15 12l-1.5-3L12 12z"/><path d="M6 3v4"/><path d="M21 17v4"/><path d="M3 11h18"/><path d="M7 19h1.5"/><path d="M15.5 19H17"/></svg> Generar Concepto</span>
               </button>
             </div>
             <div id="error-message" class="mt-4 text-red-500 font-medium"></div>
@@ -80,12 +85,9 @@
                 const result = await response.json();
                 
                 if(result.error) throw new Error(result.error);
-
-                // Construye la URL de la imagen aquí en el cliente
-                const imageUrl = `https://image.pollinations.ai/prompt/professional%20interior%20design%20photo,8k,photorealistic,${encodeURIComponent(result.title + ". " + query)}`;
-
+                
                 setLoading(false);
-                displayDesignResult({ ...result, imageUrl });
+                displayDesignResult(result, query);
 
             } catch (err) {
                 setLoading(false);
@@ -103,14 +105,24 @@
                 loadingState.classList.remove('hidden');
                 loadingMessage.textContent = message;
             } else {
-                buttonContent.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block mr-2"><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h18"/><path d="M17 19H7"/><path d="m12 12 1.5 3L15 12l-1.5-3L12 12z"/><path d="M6 3v4"/><path d="M21 17v4"/><path d="M3 11h18"/><path d="M7 19h1.5"/><path d="M15.5 19H17"/></svg> Generar Concepto`;
+                buttonContent.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block mr-2"><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h18"/><path d="M17 19H7"/><path d="m12 12 1.5 3L15 12l-1.5-3L12 12z"/><path d="M6 3v4"/><path d="M21 17v4"/><path d="M3 11h18"/><path d="M7 19h1.5"/><path d="M15.5 19H17"/></svg> Generar Concepto`;
                 loadingState.classList.add('hidden');
             }
         }
 
-        function displayDesignResult({ imageUrl, title, description }) {
-            const descriptionHTML = description.replace(/\n/g, '<br>');
-            resultContainer.innerHTML = `<div class="mt-10 w-full bg-white dark:bg-gray-800/50 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 animate-fade-in overflow-hidden"><div class="bg-gray-100 dark:bg-gray-900/50 flex items-center justify-center p-4 min-h-[300px] sm:min-h-[450px]"><img src="${imageUrl}" alt="Visualización del diseño" class="rounded-lg object-cover shadow-lg max-h-[450px]" /></div><div class="p-6 sm:p-8 text-left"><h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">${title}</h2><div class="text-gray-600 dark:text-gray-300 space-y-4 leading-relaxed">${descriptionHTML}</div></div></div>`;
+        function displayDesignResult({ title, description }, originalPrompt) {
+             const imageUrl = `https://image.pollinations.ai/prompt/professional%20interior%20design%20photo,8k,photorealistic,${encodeURIComponent(title + ". " + originalPrompt)}`;
+            const descriptionHTML = description.replace(/\n/g, '<br><br>');
+            resultContainer.innerHTML = `
+                <div class="mt-10 w-full bg-white dark:bg-gray-800/50 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 animate-fade-in overflow-hidden">
+                    <div class="bg-gray-100 dark:bg-gray-900/50 flex items-center justify-center p-4 min-h-[300px] sm:min-h-[450px]">
+                        <img src="${imageUrl}" alt="Visualización del diseño" class="rounded-lg object-cover shadow-lg max-h-[450px]" />
+                    </div>
+                    <div class="p-6 sm:p-8 text-left">
+                        <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">${title}</h2>
+                        <div class="text-gray-600 dark:text-gray-300 space-y-4 leading-relaxed">${descriptionHTML}</div>
+                    </div>
+                </div>`;
         }
     </script>
 </body>
