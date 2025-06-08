@@ -9,7 +9,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Roboto+Slab:wght@700;800&display=swap');
         body { font-family: 'Poppins', sans-serif; }
         .font-display { font-family: 'Roboto Slab', serif; }
-        .text-shadow-strong { text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.8); }
+        .text-shadow-strong { text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7); }
         .loader {
             width: 48px; height: 48px; border: 5px solid;
             border-color: #ffffff transparent;
@@ -17,17 +17,20 @@
             animation: rotation 1s linear infinite;
         }
         @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .bg-overlay::before {
+        
+        /* CAMBIO CLAVE: El overlay ahora es un gradiente solo en la parte inferior */
+        .bg-gradient-overlay::before {
             content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.9) 10%, rgba(0,0,0,0) 50%);
-            z-index: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.85) 15%, transparent 50%);
+            z-index: 1; /* Se asegura que el gradiente esté sobre la imagen */
         }
+
         .pill-button {
             @apply bg-transparent text-white border-2 border-white/80 rounded-full px-6 py-2 text-xs font-semibold uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300;
         }
         @keyframes subtle-breathing {
             0% { transform: scale(1); }
-            50% { transform: scale(1.03); }
+            50% { transform: scale(1.02); } /* Animación más sutil */
             100% { transform: scale(1); }
         }
         .animated-avatar {
@@ -39,17 +42,16 @@
 
     <!-- Contenedor de la Imagen de Fondo -->
     <div class="fixed top-0 left-0 w-full h-full z-[-1]">
-        <!-- PRUEBA: URL de marcador de posición. Si ves esto, el código está bien. -->
-        <img src="https://placehold.co/1920x1080/333333/FFFFFF?text=AQU%C3%8D+VA+TU+IMAGEN" alt="Imagen de Fondo" class="animated-avatar object-cover object-left sm:object-center w-full h-full">
+        <img src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/Aria2.jpg" alt="Imagen de Fondo" class="animated-avatar object-cover object-center w-full h-full">
     </div>
-    <div class="bg-overlay fixed top-0 left-0 w-full h-full z-[-1]"></div>
+    <!-- Capa de gradiente oscuro desde abajo -->
+    <div class="bg-gradient-overlay fixed top-0 left-0 w-full h-full z-0"></div>
 
 
-    <!-- Header con Logo y Botones - Z-INDEX CORREGIDO -->
+    <!-- Header con Logo y Botones -->
     <header class="absolute top-0 left-0 right-0 p-4 sm:p-5 flex justify-between items-center z-30">
         <div>
-            <!-- PRUEBA: URL de marcador de posición para el logo. -->
-            <img src="https://placehold.co/200x50/FFFFFF/000000?text=Tu+Logo" alt="YAN'Z SMART WOOD Logo" class="h-8 sm:h-10">
+            <img src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/logoyanz.png" alt="YAN'Z SMART WOOD Logo" class="h-8 sm:h-10">
         </div>
         <div class="hidden sm:flex items-center gap-4">
             <button class="pill-button text-xs py-2">Generar</button>
@@ -57,10 +59,10 @@
         </div>
     </header>
 
-    <!-- Contenido Principal -->
-    <div class="relative w-full min-h-screen flex flex-col items-center justify-end text-center z-10">
+    <!-- Contenido Principal - Posición ajustada más abajo -->
+    <div class="relative w-full min-h-screen flex flex-col items-center justify-end text-center z-20">
         
-        <div class="w-full max-w-lg p-4 mb-10 sm:mb-16">
+        <div class="w-full max-w-lg p-4 mb-8 sm:mb-12">
             <h1 class="font-display text-3xl sm:text-4xl font-bold tracking-tight text-shadow-strong">
                 Aria
             </h1>
@@ -69,7 +71,7 @@
             </p>
             
             <div class="mt-5 w-full">
-                <input id="prompt-input" type="text" placeholder="Describe tu visión..." class="w-full px-5 py-3 text-sm bg-white/10 border border-gray-500 rounded-full focus:ring-2 focus:ring-indigo-400 focus:outline-none transition duration-200 placeholder:text-gray-400" />
+                <input id="prompt-input" type="text" placeholder="Describe tu visión..." class="w-full px-5 py-3 text-sm bg-white/20 border border-gray-400 rounded-full focus:ring-2 focus:ring-indigo-400 focus:outline-none transition duration-200 placeholder:text-gray-300" />
             </div>
             
             <div class="mt-4">
@@ -89,7 +91,7 @@
          <div id="result-container" class="w-full max-w-3xl"></div>
     </div>
 
-    <div id="loading-state" class="absolute inset-0 flex flex-col items-center justify-center bg-black/50 hidden z-40">
+    <div id="loading-state" class="absolute inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm hidden z-40">
         <div class="loader"></div>
         <p id="loading-message" class="text-gray-300 font-medium text-lg mt-4"></p>
     </div>
@@ -105,7 +107,7 @@
         const loadingMessage = document.getElementById('loading-message');
         const resultContainer = document.getElementById('result-container');
 
-        // Tu JavaScript se mantiene igual
+        // El resto del JavaScript no necesita cambios
         function speak(text) {
             speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
@@ -199,4 +201,3 @@
     </script>
 </body>
 </html>
-```
