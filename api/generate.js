@@ -1,43 +1,46 @@
-// This is a Vercel Serverless Function that acts as a secure backend.
+// Este es el "servidor" o "mayordomo" que corre en Vercel.
+// Su única tarea es generar texto rápidamente para evitar timeouts.
 
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-// IMPORTANT: Set your GEMINI_API_KEY as an environment variable in Vercel.
+// Lee la API Key desde las variables de entorno de Vercel.
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 export default async function handler(request, response) {
+  // 1. Asegurarse de que solo se acepten peticiones POST.
   if (request.method !== 'POST') {
     return response.status(405).json({ error: 'Method Not Allowed' });
   }
 
   const { prompt } = request.body;
 
+  // 2. Validar que el prompt no esté vacío.
   if (!prompt) {
-    return response.status(400).json({ error: 'Prompt is required' });
+    return response.status(400).json({ error: 'La consulta no puede estar vacía.' });
   }
 
   try {
-    const textModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
-    const textPrompt = `Actúa como Aria, una arquitecta y diseñadora experta de "YAN'Z SMART WOOD". La idea del cliente es: "${prompt}". Genera una descripción del concepto. Empieza presentándote ("Hola, soy Aria..."). Termina con una despedida profesional ("Espero que este concepto le inspire. Atentamente, Aria."). Formato: "Título: [Un título sofisticado]\\n\\n[Descripción con saltos de línea]"`;
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
     
-    const textResult = await textModel.generateContent(textPrompt);
-    const rawText = await textResult.response.text();
+    // 3. Crear la instrucción para la IA.
+    const fullPrompt = `Actúa como Aria, una arquitecta y diseñadora experta de "YAN'Z SMART WOOD". La idea del cliente es: "${prompt}". Genera una descripción del concepto. Empieza presentándote ("Hola, soy Aria..."). Termina con una despedida profesional ("Espero que este concepto le inspire. Atentamente, Aria."). El formato DEBE ser: "Título: [Un título sofisticado]\\n\\n[Descripción con saltos de línea]"`;
+    
+    const result = await model.generateContent(fullPrompt);
+    const rawText = await result.response.text();
 
+    // 4. Extraer el título y la descripción de forma segura.
     const titleMatch = rawText.match(/Título: (.*)/);
     const title = titleMatch ? titleMatch[1].trim() : "Concepto de Diseño Personalizado";
-    const description = rawText.replace(/Título: .*\n\n/, "").trim();
+    const description = rawText.replace(/Título: .*\n\n?/, "").trim();
 
-    // Using a reliable placeholder for the image to ensure speed and avoid timeouts on Vercel's free tier.
-    const imageUrl = `https://image.pollinations.ai/prompt/professional%20interior%20design%20photo,%20photorealistic,%208k,%20${encodeURIComponent(title + ". " + prompt)}`;
-
+    // 5. Enviar la respuesta final al cliente (solo texto).
     response.status(200).json({
       title,
       description,
-      imageUrl,
     });
 
   } catch (error) {
-    console.error('Error en la API de Google:', error);
-    response.status(500).json({ error: 'Error al contactar los servicios de IA.' });
+    console.error('Error en la función de Vercel:', error);
+    response.status(500).json({ error: 'Hubo un problema al comunicarse con el servicio de IA. Por favor, intente de nuevo.' });
   }
 }
