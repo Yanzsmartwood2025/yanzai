@@ -3,171 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asesor de Diseño IA - YAN'Z SMART WOOD</title>
+    <title>Asesora de Diseño IA: Aria - YAN'Z SMART WOOD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Roboto+Slab:wght@700;800&display=swap');
         body { font-family: 'Poppins', sans-serif; }
         .font-display { font-family: 'Roboto Slab', serif; }
-        .text-shadow-strong { text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.8); }
-        .media-background {
-            @apply object-cover object-center w-full h-full;
-        }
-        .pill-button {
-            @apply bg-transparent text-white border-2 border-white/80 rounded-full px-6 py-2 text-xs font-semibold uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300;
-        }
-        .loader {
-            width: 48px; height: 48px; border: 5px solid;
-            border-color: #ffffff transparent;
-            border-radius: 50%; display: inline-block;
-            animation: rotation 1s linear infinite;
-        }
+        .text-shadow-strong { text-shadow: 1px 1px 8px rgba(0, 0, 0, 0.9); }
+        .media-background { @apply object-cover object-center w-full h-full; }
+        .pill-button { @apply bg-white/10 backdrop-blur-sm text-white border border-white/50 rounded-full px-6 py-2 text-xs font-semibold uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300; }
+        .loader { width: 48px; height: 48px; border: 5px solid; border-color: #ffffff transparent; border-radius: 50%; display: inline-block; animation: rotation 1s linear infinite; text-shadow: none; }
         @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+        .animate-fade-in { animation: fade-in 0.5s ease-out forwards; }
+        #aria-video { filter: brightness(1.1); }
     </style>
 </head>
 <body class="bg-black text-white">
 
-    <!-- CONTENEDOR DE LA INTRODUCCIÓN CON EL VIDEO COMPLETO -->
-    <div id="intro-container" class="fixed inset-0 z-50 bg-black flex items-center justify-center opacity-0 transition-opacity duration-500 pointer-events-none">
-        <video id="intro-video" muted playsinline class="w-full h-full object-cover">
-             <source src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/intro-completa.mp4" type="video/mp4">
+    <!-- Video de fondo sutil -->
+    <div class="fixed top-0 left-0 w-full h-full z-[-1] bg-black">
+        <video loop muted playsinline autoplay class="media-background opacity-30">
+             <source src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/video-neutral.mp4" type="video/mp4">
         </video>
     </div>
 
-    <!-- BOTÓN DE INICIO INICIAL -->
-    <div id="start-button-container" class="fixed inset-0 z-50 flex items-center justify-center">
-        <button id="start-button" class="pill-button px-10 py-4 text-lg">Entrar</button>
-    </div>
-
-    <!-- CONTENEDOR DE MEDIOS DE FONDO (oculto al inicio) -->
-    <div id="background-media-container" class="fixed top-0 left-0 w-full h-full z-[-1] opacity-0 transition-opacity duration-1000">
-        <video id="video-neutral" muted playsinline class="media-background"><source src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/video-neutral.mp4" type="video/mp4"></video>
-        <video id="video-happy" loop muted playsinline class="media-background hidden"><source src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/video-happy.mp4" type="video/mp4"></video>
-        <video id="video-thinking" loop muted playsinline class="media-background hidden"><source src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/video-thinking.mp4" type="video/mp4"></video>
-        <video id="video-suggesting" loop muted playsinline class="media-background hidden"><source src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/video-suggesting.mp4" type="video/mp4"></video>
-        <video id="video-grateful" loop muted playsinline class="media-background hidden"><source src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/video-grateful.mp4" type="video/mp4"></video>
-    </div>
-
-    <!-- Header y Contenido Principal -->
-    <header id="main-header" class="absolute top-0 left-0 right-0 p-4 sm:p-5 flex justify-between items-center z-30 opacity-0 transition-opacity duration-1000">
+    <!-- Contenido Principal de la App -->
+    <header class="absolute top-0 left-0 right-0 p-4 sm:p-5 flex justify-between items-center z-30">
         <div><img src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/logoyanz.png" alt="YAN'Z SMART WOOD Logo" class="h-8 sm:h-10"></div>
         <div class="hidden sm:flex items-center gap-4">
-            <button class="pill-button text-xs py-2">Generar</button>
-            <button class="pill-button text-xs py-2">Concepto</button>
+             <a href="https://yanzsmartwood.neocities.org" target="_blank" class="pill-button text-xs py-2">Volver a la web</a>
         </div>
     </header>
-    <div id="main-content" class="relative w-full min-h-screen flex flex-col items-center justify-center text-center opacity-0 transition-opacity duration-1000">
-        <div class="relative z-10 w-full max-w-lg p-4">
-            <h1 class="font-display text-3xl sm:text-4xl font-bold tracking-tight text-shadow-strong">Aria</h1>
-            <p class="mt-1 text-sm text-gray-200">Tu asesora de diseño IA.</p>
-            <div class="mt-5 w-full">
-                <input id="prompt-input" type="text" placeholder="Describe tu visión..." class="w-full px-5 py-3 text-sm bg-white/10 border border-gray-500 rounded-full focus:ring-2 focus:ring-indigo-400 focus:outline-none transition duration-200 placeholder:text-gray-400" />
-            </div>
-            <div class="mt-4">
-                <button id="generate-button" class="pill-button disabled:bg-white/20 disabled:cursor-not-allowed disabled:text-gray-400 disabled:border-gray-500">
-                    <span id="button-content">Generar Concepto</span>
-                </button>
-            </div>
-            <div id="error-message" class="mt-3 text-red-400 font-medium text-sm"></div>
+    
+    <!-- Contenedor para el video de "Aria Hablando" -->
+    <div id="aria-container" class="fixed inset-0 z-20 hidden">
+        <video id="aria-video" loop muted playsinline class="absolute top-0 left-0 min-w-full min-h-full w-auto h-auto object-cover"></video>
+        <div id="video-loader" class="absolute inset-0 flex-col items-center justify-center hidden">
+            <div class="loader"></div>
+            <p id="loading-message" class="text-gray-200 font-medium text-lg mt-4 text-shadow-strong"></p>
         </div>
     </div>
+
+    <main class="relative w-full min-h-screen flex flex-col items-center justify-center text-center p-4 overflow-hidden">
+        <div id="form-container" class="relative z-10 w-full max-w-lg">
+            <h1 class="font-display text-4xl sm:text-5xl font-bold tracking-tight text-shadow-strong">Aria</h1>
+            <p class="mt-1 text-gray-200">Tu asesora de diseño IA.</p>
+            <div class="mt-6 w-full">
+                <textarea id="prompt-input" rows="3" placeholder="Describe tu visión..." class="w-full px-5 py-3 text-sm bg-white/10 border border-gray-500 rounded-2xl focus:ring-2 focus:ring-indigo-400 focus:outline-none transition duration-200 placeholder:text-gray-400"></textarea>
+            </div>
+            <div class="mt-4">
+                <button id="generate-button" class="bg-white text-black font-semibold rounded-full px-8 py-3 hover:bg-gray-200 transition-all duration-300 disabled:bg-gray-500 disabled:cursor-not-allowed">
+                    <span>Generar Concepto</span>
+                </button>
+            </div>
+            <div id="error-message" class="mt-3 text-red-400 font-medium text-sm h-5"></div>
+        </div>
+    </main>
     
-    <div id="result-wrapper" class="absolute top-0 left-0 w-full h-full flex items-center justify-center p-4 hidden z-20">
-         <div id="result-container" class="w-full max-w-3xl"></div>
-    </div>
-    <div id="loading-state" class="absolute inset-0 flex flex-col items-center justify-center bg-black/50 hidden z-40">
-        <div class="loader"></div>
-        <p id="loading-message" class="text-gray-300 font-medium text-lg mt-4"></p>
+    <div id="result-wrapper" class="fixed inset-0 hidden z-40 bg-black/50 backdrop-blur-md overflow-y-auto">
+         <div id="result-container" class="w-full max-w-4xl mx-auto my-12 p-4"></div>
     </div>
 
     <script>
-        // Elementos de la UI
-        const startButtonContainer = document.getElementById('start-button-container');
-        const startButton = document.getElementById('start-button');
-        const introContainer = document.getElementById('intro-container');
-        const introVideo = document.getElementById('intro-video');
-        const backgroundContainer = document.getElementById('background-media-container');
-        const mainHeader = document.getElementById('main-header');
-        const mainContent = document.getElementById('main-content');
+        // --- Elementos del DOM ---
+        const formContainer = document.getElementById('form-container');
         const resultWrapper = document.getElementById('result-wrapper');
+        const resultContainer = document.getElementById('result-container');
         const promptInput = document.getElementById('prompt-input');
         const generateButton = document.getElementById('generate-button');
         const errorMessage = document.getElementById('error-message');
-        const loadingState = document.getElementById('loading-state');
-        const resultContainer = document.getElementById('result-container');
+        const ariaContainer = document.getElementById('aria-container');
+        const ariaVideo = document.getElementById('aria-video');
+        const videoLoader = document.getElementById('video-loader');
+        const loadingMessage = document.getElementById('loading-message');
+        let synth = window.speechSynthesis;
 
-        const media = {
-            neutral: document.getElementById('video-neutral'),
-            happy: document.getElementById('video-happy'),
-            thinking: document.getElementById('video-thinking'),
-            suggesting: document.getElementById('video-suggesting'),
-            grateful: document.getElementById('video-grateful')
-        };
-        let currentMedia = null;
-
-        function switchBackground(mediaName) {
-            const newMedia = media[mediaName] || media.neutral;
-            if (newMedia !== currentMedia) {
-                if(currentMedia) {
-                    currentMedia.classList.add('hidden');
-                    if (currentMedia.tagName === 'VIDEO') currentMedia.pause();
-                }
-                newMedia.classList.remove('hidden');
-                if (newMedia.tagName === 'VIDEO' && newMedia.id !== 'video-neutral') {
-                    newMedia.currentTime = 0;
-                    newMedia.play().catch(e => console.error("Error al reproducir video:", e));
-                }
-                currentMedia = newMedia;
+        // --- Saludo de Bienvenida con el primer clic ---
+        document.body.addEventListener('click', () => {
+             // Revisa si las voces del navegador están listas
+            if (synth.getVoices().length === 0) {
+                synth.onvoiceschanged = () => {
+                     speak("Hola, soy Aria, tu asesora de diseño. Describe tu visión y la haré realidad.");
+                };
+            } else {
+                 speak("Hola, soy Aria, tu asesora de diseño. Describe tu visión y la haré realidad.");
             }
-        }
+        }, { once: true }); // se ejecuta solo una vez
 
-        function speak(text, onEndCallback) {
-            speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-utterance.lang = 'es-ES';
-            utterance.onend = onEndCallback;
-            speechSynthesis.speak(utterance);
-        }
-
-        function startIntroSequence() {
-            // Desvanece el botón de entrar
-            startButtonContainer.classList.add('opacity-0');
-            setTimeout(() => startButtonContainer.style.display = 'none', 500);
-
-            // Muestra el contenedor de la intro y reproduce el video
-            introContainer.classList.remove('opacity-0');
-            introContainer.classList.remove('pointer-events-none');
-            introVideo.play().catch(e => console.error("Error al reproducir video de intro:", e));
-            speak("Hola, soy Aria, tu asesora de diseño. Describe tu visión y la haré realidad.");
-
-            introVideo.onended = () => {
-                introContainer.classList.add('opacity-0');
-                backgroundContainer.classList.remove('opacity-0');
-                switchBackground('neutral');
-                mainHeader.classList.remove('opacity-0');
-                mainContent.classList.remove('opacity-0');
-                setTimeout(() => introContainer.style.display = 'none', 1000);
-            };
-        }
-
-        startButton.addEventListener('click', startIntroSequence);
-
-        // ... El resto del código JS no necesita cambios
+        // --- Lógica Principal de la Aplicación ---
         generateButton.addEventListener('click', handleQuery);
         promptInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') handleQuery();
+            if (e.key === 'Enter' && !e.shiftKey) {
+                 e.preventDefault();
+                 handleQuery();
+            }
         });
 
         async function handleQuery() {
-            // ...
+            const query = promptInput.value.trim();
+            if (!query) {
+                errorMessage.textContent = 'Por favor, describe el diseño que imaginas.';
+                return;
+            }
+            setLoading(true, 'Creando tu concepto...');
+            formContainer.classList.add('hidden');
+            ariaContainer.classList.remove('hidden');
+
+            const talkingVideoSrc = 'https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/video-neutral.mp4';
+            if(ariaVideo.querySelector('source')?.src !== talkingVideoSrc) {
+                ariaVideo.innerHTML = `<source src="${talkingVideoSrc}" type="video/mp4">`;
+                ariaVideo.load();
+            }
+            ariaVideo.play();
+
+            try {
+                const result = await callGeminiAPI(query);
+                if (result) displayDesignResult(result, query);
+                else throw new Error("No se pudo obtener una respuesta de la IA.");
+            } catch (err) {
+                errorMessage.textContent = 'Ha ocurrido un error. Por favor, intenta de nuevo.';
+                console.error('API call error:', err);
+                formContainer.classList.remove('hidden');
+            } finally {
+                setLoading(false); 
+                ariaContainer.classList.add('hidden'); 
+                ariaVideo.pause();
+                ariaVideo.currentTime = 0;
+            }
         }
+
+        async function callGeminiAPI(userPrompt) {
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            const fullPrompt = `Eres "Aria", una experta asesora de diseño para "YAN'Z SMART WOOD". Cliente: "${userPrompt}". Responde en JSON con "title" y "description", destacando la elegancia de la madera. Usa \\n para párrafos.`;
+            const payload = {
+                contents: [{ role: "user", parts: [{ text: fullPrompt }] }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: { "title": { "type": "STRING" }, "description": { "type": "STRING" } },
+                        required: ["title", "description"]
+                    }
+                }
+            };
+            const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            if (!response.ok) throw new Error(`API Error: ${response.status}`);
+            const result = await response.json();
+            const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (jsonText) return JSON.parse(jsonText);
+            return null;
+        }
+
         function setLoading(isLoading, message = '') {
-            // ...
+            errorMessage.textContent = '';
+            generateButton.disabled = isLoading;
+            if (isLoading) {
+                generateButton.innerHTML = `<div class="mx-auto h-5 w-5 animate-spin rounded-full border-2 border-solid border-black border-t-transparent"></div>`;
+                videoLoader.classList.remove('hidden');
+                videoLoader.classList.add('flex');
+                loadingMessage.textContent = message;
+            } else {
+                generateButton.innerHTML = `<span>Generar Concepto</span>`;
+                videoLoader.classList.add('hidden');
+                videoLoader.classList.remove('flex');
+            }
         }
-        function displayDesignResult({ emotion, title, description }, originalPrompt) {
-            // ...
+
+        function displayDesignResult({ title, description }, originalPrompt) {
+            const imagePrompt = `professional interior design photo, 8k, photorealistic, ${title}. ${originalPrompt}`;
+            const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}`;
+            const descriptionHTML = description.replace(/\n/g, '<br><br>');
+            resultWrapper.classList.remove('hidden');
+            resultContainer.innerHTML = `
+                <div class="w-full bg-black/60 backdrop-blur-md rounded-2xl shadow-xl border border-gray-700 animate-fade-in overflow-hidden">
+                    <div class="bg-black/30 flex items-center justify-center p-4 min-h-[250px] sm:min-h-[400px]">
+                        <img src="${imageUrl}" alt="Visualización del diseño: ${title}" class="rounded-lg object-cover shadow-lg max-h-[400px]" onerror="this.alt='La visualización del diseño no pudo cargarse.'; this.style.display='none'"/>
+                    </div>
+                    <div class="p-6 sm:p-8 text-left">
+                        <h2 class="font-display text-2xl font-bold text-white">${title}</h2>
+                        <div class="mt-4 text-gray-200 space-y-4 leading-relaxed text-sm">${descriptionHTML}</div>
+                        <button id="close-result" class="pill-button mt-6">Volver</button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('close-result').addEventListener('click', () => {
+                resultWrapper.classList.add('hidden');
+                formContainer.classList.remove('hidden');
+                stopSpeech();
+            });
+            speak(title + ". " + description);
+        }
+        
+        function speak(text) {
+            stopSpeech();
+            const utterance = new SpeechSynthesisUtterance(text);
+            const voices = synth.getVoices().filter(v => v.lang.startsWith('es'));
+            const preferredVoice = voices.find(v => v.name.includes('Sabina') || v.name.includes('Paulina')) || voices.find(v => v.lang === 'es-US') || voices[0];
+            utterance.voice = preferredVoice;
+            utterance.rate = 0.95;
+            utterance.pitch = 1.0;
+            synth.speak(utterance);
+        }
+        
+        function stopSpeech() {
+            if (synth.speaking) synth.cancel();
         }
     </script>
 </body>
 </html>
-```</immersive>
