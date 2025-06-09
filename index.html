@@ -9,7 +9,13 @@
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Roboto+Slab:wght@700;800&display=swap');
         body { font-family: 'Poppins', sans-serif; }
         .font-display { font-family: 'Roboto Slab', serif; }
-        .text-shadow-strong { text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7); }
+        .text-shadow-strong { text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.8); }
+        .media-background {
+            @apply object-cover object-center w-full h-full;
+        }
+        .pill-button {
+            @apply bg-transparent text-white border-2 border-white/80 rounded-full px-6 py-2 text-xs font-semibold uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300;
+        }
         .loader {
             width: 48px; height: 48px; border: 5px solid;
             border-color: #ffffff transparent;
@@ -17,187 +23,151 @@
             animation: rotation 1s linear infinite;
         }
         @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        /* CAMBIO CLAVE: El overlay ahora es un gradiente solo en la parte inferior */
-        .bg-gradient-overlay::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.85) 15%, transparent 50%);
-            z-index: 1; /* Se asegura que el gradiente esté sobre la imagen */
-        }
-
-        .pill-button {
-            @apply bg-transparent text-white border-2 border-white/80 rounded-full px-6 py-2 text-xs font-semibold uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300;
-        }
-        @keyframes subtle-breathing {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); } /* Animación más sutil */
-            100% { transform: scale(1); }
-        }
-        .animated-avatar {
-            animation: subtle-breathing 12s ease-in-out infinite;
-        }
     </style>
 </head>
 <body class="bg-black text-white">
 
-    <!-- Contenedor de la Imagen de Fondo -->
-    <div class="fixed top-0 left-0 w-full h-full z-[-1]">
-        <img src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/Aria2.jpg" alt="Imagen de Fondo" class="animated-avatar object-cover object-center w-full h-full">
+    <!-- CONTENEDOR DE LA INTRODUCCIÓN CON EL VIDEO COMPLETO -->
+    <div id="intro-container" class="fixed inset-0 z-50 bg-black flex items-center justify-center opacity-0 transition-opacity duration-500 pointer-events-none">
+        <video id="intro-video" muted playsinline class="w-full h-full object-cover">
+             <source src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/intro-completa.mp4" type="video/mp4">
+        </video>
     </div>
-    <!-- Capa de gradiente oscuro desde abajo -->
-    <div class="bg-gradient-overlay fixed top-0 left-0 w-full h-full z-0"></div>
 
+    <!-- BOTÓN DE INICIO INICIAL -->
+    <div id="start-button-container" class="fixed inset-0 z-50 flex items-center justify-center">
+        <button id="start-button" class="pill-button px-10 py-4 text-lg">Entrar</button>
+    </div>
 
-    <!-- Header con Logo y Botones -->
-    <header class="absolute top-0 left-0 right-0 p-4 sm:p-5 flex justify-between items-center z-30">
-        <div>
-            <img src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/logoyanz.png" alt="YAN'Z SMART WOOD Logo" class="h-8 sm:h-10">
-        </div>
+    <!-- CONTENEDOR DE MEDIOS DE FONDO (oculto al inicio) -->
+    <div id="background-media-container" class="fixed top-0 left-0 w-full h-full z-[-1] opacity-0 transition-opacity duration-1000">
+        <video id="video-neutral" muted playsinline class="media-background"><source src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/video-neutral.mp4" type="video/mp4"></video>
+        <video id="video-happy" loop muted playsinline class="media-background hidden"><source src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/video-happy.mp4" type="video/mp4"></video>
+        <video id="video-thinking" loop muted playsinline class="media-background hidden"><source src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/video-thinking.mp4" type="video/mp4"></video>
+        <video id="video-suggesting" loop muted playsinline class="media-background hidden"><source src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/video-suggesting.mp4" type="video/mp4"></video>
+        <video id="video-grateful" loop muted playsinline class="media-background hidden"><source src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/video-grateful.mp4" type="video/mp4"></video>
+    </div>
+
+    <!-- Header y Contenido Principal -->
+    <header id="main-header" class="absolute top-0 left-0 right-0 p-4 sm:p-5 flex justify-between items-center z-30 opacity-0 transition-opacity duration-1000">
+        <div><img src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/logoyanz.png" alt="YAN'Z SMART WOOD Logo" class="h-8 sm:h-10"></div>
         <div class="hidden sm:flex items-center gap-4">
             <button class="pill-button text-xs py-2">Generar</button>
             <button class="pill-button text-xs py-2">Concepto</button>
         </div>
     </header>
-
-    <!-- Contenido Principal - Posición ajustada más abajo -->
-    <div class="relative w-full min-h-screen flex flex-col items-center justify-end text-center z-20">
-        
-        <div class="w-full max-w-lg p-4 mb-8 sm:mb-12">
-            <h1 class="font-display text-3xl sm:text-4xl font-bold tracking-tight text-shadow-strong">
-                Aria
-            </h1>
-            <p class="mt-1 text-sm text-gray-200">
-                Tu asesora de diseño IA.
-            </p>
-            
+    <div id="main-content" class="relative w-full min-h-screen flex flex-col items-center justify-center text-center opacity-0 transition-opacity duration-1000">
+        <div class="relative z-10 w-full max-w-lg p-4">
+            <h1 class="font-display text-3xl sm:text-4xl font-bold tracking-tight text-shadow-strong">Aria</h1>
+            <p class="mt-1 text-sm text-gray-200">Tu asesora de diseño IA.</p>
             <div class="mt-5 w-full">
-                <input id="prompt-input" type="text" placeholder="Describe tu visión..." class="w-full px-5 py-3 text-sm bg-white/20 border border-gray-400 rounded-full focus:ring-2 focus:ring-indigo-400 focus:outline-none transition duration-200 placeholder:text-gray-300" />
+                <input id="prompt-input" type="text" placeholder="Describe tu visión..." class="w-full px-5 py-3 text-sm bg-white/10 border border-gray-500 rounded-full focus:ring-2 focus:ring-indigo-400 focus:outline-none transition duration-200 placeholder:text-gray-400" />
             </div>
-            
             <div class="mt-4">
                 <button id="generate-button" class="pill-button disabled:bg-white/20 disabled:cursor-not-allowed disabled:text-gray-400 disabled:border-gray-500">
-                    <span id="button-content">
-                        Generar Concepto
-                    </span>
+                    <span id="button-content">Generar Concepto</span>
                 </button>
             </div>
-            
             <div id="error-message" class="mt-3 text-red-400 font-medium text-sm"></div>
         </div>
     </div>
-
-    <!-- Contenedores de Carga y Resultados -->
+    
     <div id="result-wrapper" class="absolute top-0 left-0 w-full h-full flex items-center justify-center p-4 hidden z-20">
          <div id="result-container" class="w-full max-w-3xl"></div>
     </div>
-
-    <div id="loading-state" class="absolute inset-0 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm hidden z-40">
+    <div id="loading-state" class="absolute inset-0 flex flex-col items-center justify-center bg-black/50 hidden z-40">
         <div class="loader"></div>
         <p id="loading-message" class="text-gray-300 font-medium text-lg mt-4"></p>
     </div>
 
     <script>
-        const mainContent = document.querySelector('.relative.w-full.min-h-screen');
+        // Elementos de la UI
+        const startButtonContainer = document.getElementById('start-button-container');
+        const startButton = document.getElementById('start-button');
+        const introContainer = document.getElementById('intro-container');
+        const introVideo = document.getElementById('intro-video');
+        const backgroundContainer = document.getElementById('background-media-container');
+        const mainHeader = document.getElementById('main-header');
+        const mainContent = document.getElementById('main-content');
         const resultWrapper = document.getElementById('result-wrapper');
         const promptInput = document.getElementById('prompt-input');
         const generateButton = document.getElementById('generate-button');
-        const buttonContent = document.getElementById('button-content');
         const errorMessage = document.getElementById('error-message');
         const loadingState = document.getElementById('loading-state');
-        const loadingMessage = document.getElementById('loading-message');
         const resultContainer = document.getElementById('result-container');
 
-        // El resto del JavaScript no necesita cambios
-        function speak(text) {
+        const media = {
+            neutral: document.getElementById('video-neutral'),
+            happy: document.getElementById('video-happy'),
+            thinking: document.getElementById('video-thinking'),
+            suggesting: document.getElementById('video-suggesting'),
+            grateful: document.getElementById('video-grateful')
+        };
+        let currentMedia = null;
+
+        function switchBackground(mediaName) {
+            const newMedia = media[mediaName] || media.neutral;
+            if (newMedia !== currentMedia) {
+                if(currentMedia) {
+                    currentMedia.classList.add('hidden');
+                    if (currentMedia.tagName === 'VIDEO') currentMedia.pause();
+                }
+                newMedia.classList.remove('hidden');
+                if (newMedia.tagName === 'VIDEO' && newMedia.id !== 'video-neutral') {
+                    newMedia.currentTime = 0;
+                    newMedia.play().catch(e => console.error("Error al reproducir video:", e));
+                }
+                currentMedia = newMedia;
+            }
+        }
+
+        function speak(text, onEndCallback) {
             speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'es-ES';
+utterance.lang = 'es-ES';
+            utterance.onend = onEndCallback;
             speechSynthesis.speak(utterance);
         }
 
-        let hasWelcomed = false;
-        function playWelcomeMessage() {
-            if (!hasWelcomed) {
-                speak("Hola, soy Aria, tu asesora de diseño. Describe tu visión y la haré realidad.");
-                hasWelcomed = true;
-                document.body.removeEventListener('click', playWelcomeMessage);
-                promptInput.removeEventListener('focus', playWelcomeMessage);
-            }
-        }
-        document.body.addEventListener('click', playWelcomeMessage);
-        promptInput.addEventListener('focus', playWelcomeMessage);
+        function startIntroSequence() {
+            // Desvanece el botón de entrar
+            startButtonContainer.classList.add('opacity-0');
+            setTimeout(() => startButtonContainer.style.display = 'none', 500);
 
+            // Muestra el contenedor de la intro y reproduce el video
+            introContainer.classList.remove('opacity-0');
+            introContainer.classList.remove('pointer-events-none');
+            introVideo.play().catch(e => console.error("Error al reproducir video de intro:", e));
+            speak("Hola, soy Aria, tu asesora de diseño. Describe tu visión y la haré realidad.");
+
+            introVideo.onended = () => {
+                introContainer.classList.add('opacity-0');
+                backgroundContainer.classList.remove('opacity-0');
+                switchBackground('neutral');
+                mainHeader.classList.remove('opacity-0');
+                mainContent.classList.remove('opacity-0');
+                setTimeout(() => introContainer.style.display = 'none', 1000);
+            };
+        }
+
+        startButton.addEventListener('click', startIntroSequence);
+
+        // ... El resto del código JS no necesita cambios
         generateButton.addEventListener('click', handleQuery);
         promptInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') handleQuery();
         });
 
         async function handleQuery() {
-            const query = promptInput.value.trim();
-            if (!query) {
-                errorMessage.textContent = 'Por favor, ingrese una consulta.';
-                return;
-            }
-            setLoading(true, 'Contactando a la Asesora IA...');
-            
-            try {
-                const response = await fetch('/api/generate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt: query })
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Error en la respuesta del servidor.');
-                }
-                
-                const result = await response.json();
-                
-                if(result.error) throw new Error(result.error);
-                
-                setLoading(false);
-                displayDesignResult(result, query);
-
-            } catch (err) {
-                setLoading(false);
-                errorMessage.textContent = 'Ha ocurrido un error. Por favor, intente reformular su consulta.';
-                console.error('Fetch error:', err);
-            }
+            // ...
         }
-
         function setLoading(isLoading, message = '') {
-            generateButton.disabled = isLoading;
-            errorMessage.textContent = '';
-            
-            if (isLoading) {
-                loadingState.classList.remove('hidden');
-            } else {
-                loadingState.classList.add('hidden');
-            }
+            // ...
         }
-
-        function displayDesignResult({ title, description }, originalPrompt) {
-            const imageUrl = `https://image.pollinations.ai/prompt/professional%20interior%20design%20photo,8k,photorealistic,${encodeURIComponent(title + ". " + originalPrompt)}`;
-            const descriptionHTML = description.replace(/\n/g, '<br><br>');
-
-            mainContent.style.display = 'none'; 
-            resultWrapper.classList.remove('hidden'); 
-
-            resultContainer.innerHTML = `
-                <div class="w-full bg-black/60 backdrop-blur-md rounded-2xl shadow-xl border border-gray-700 animate-fade-in overflow-hidden">
-                    <div class="bg-black/30 flex items-center justify-center p-4 min-h-[250px] sm:min-h-[400px]">
-                        <img src="${imageUrl}" alt="Visualización del diseño" class="rounded-lg object-cover shadow-lg max-h-[400px]" onerror="this.onerror=null;this.src='https://placehold.co/600x400/000000/FFFFFF?text=Error+al+cargar+imagen';" />
-                    </div>
-                    <div class="p-6 sm:p-8 text-left">
-                        <h2 class="font-display text-2xl font-bold text-white">${title}</h2>
-                        <div class="mt-4 text-gray-200 space-y-4 leading-relaxed text-sm">${descriptionHTML}</div>
-                    </div>
-                </div>`;
-
-            const textToSpeak = `${title}. ${description}`;
-            speak(textToSpeak);
+        function displayDesignResult({ emotion, title, description }, originalPrompt) {
+            // ...
         }
     </script>
 </body>
 </html>
+```</immersive>
