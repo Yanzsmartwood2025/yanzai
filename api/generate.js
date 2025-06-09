@@ -1,46 +1,63 @@
-// Este es el "servidor" o "mayordomo" que corre en Vercel.
-// Su única tarea es generar texto rápidamente para evitar timeouts.
+// Importa la librería oficial de Google
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+// Configuración de la API
+export const config = {
+  runtime: 'edge', // Usa el runtime de Vercel para máxima velocidad
+};
 
-// Lee la API Key desde las variables de entorno de Vercel.
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-export default async function handler(request, response) {
-  // 1. Asegurarse de que solo se acepten peticiones POST.
-  if (request.method !== 'POST') {
-    return response.status(405).json({ error: 'Method Not Allowed' });
-  }
-
-  const { prompt } = request.body;
-
-  // 2. Validar que el prompt no esté vacío.
-  if (!prompt) {
-    return response.status(400).json({ error: 'La consulta no puede estar vacía.' });
-  }
-
+// Esta es la función principal que se ejecuta cuando se llama a /api/generate
+export default async function handler(req) {
   try {
+    // 1. Leer la llave secreta desde las variables de entorno de Vercel
+    //    Esta es la parte más importante y la que probablemente está fallando.
+    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+
+    // 2. Obtener el prompt que envió el usuario desde la página web
+    const { prompt } = await req.json();
+
+    // Si no hay prompt, devuelve un error
+    if (!prompt) {
+      return new Response(JSON.stringify({ error: "No se recibió ningún prompt." }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    // 3. Preparar y llamar al modelo de IA de Google
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
     
-    // 3. Crear la instrucción para la IA.
-    const fullPrompt = `Actúa como Aria, una arquitecta y diseñadora experta de "YAN'Z SMART WOOD". La idea del cliente es: "${prompt}". Genera una descripción del concepto. Empieza presentándote ("Hola, soy Aria..."). Termina con una despedida profesional ("Espero que este concepto le inspire. Atentamente, Aria."). El formato DEBE ser: "Título: [Un título sofisticado]\\n\\n[Descripción con saltos de línea]"`;
-    
+    // El prompt que le damos a la IA, diciéndole cómo debe comportarse
+    const fullPrompt = `
+      Eres "Aria", una experta asesora de diseño de interiores para la empresa "YAN'Z SMART WOOD", especializada en muebles de madera de alta gama.
+      Un cliente ha descrito su visión: "${prompt}".
+
+      Tu tarea es responder con un título inspirador y una descripción detallada.
+      La descripción debe presentar el concepto de forma atractiva y profesional, mencionando materiales, paleta de colores, iluminación y tipos de muebles, destacando siempre la elegancia y la calidad de la madera.
+    `;
+
     const result = await model.generateContent(fullPrompt);
-    const rawText = await result.response.text();
+    const response = await result.response;
+    const text = response.text();
 
-    // 4. Extraer el título y la descripción de forma segura.
-    const titleMatch = rawText.match(/Título: (.*)/);
-    const title = titleMatch ? titleMatch[1].trim() : "Concepto de Diseño Personalizado";
-    const description = rawText.replace(/Título: .*\n\n?/, "").trim();
+    // 4. Procesar la respuesta de la IA para enviarla como JSON
+    //    Asumimos que la IA devuelve el título en la primera línea.
+    const lines = text.split('\n');
+    const title = lines[0].replace('Título: ', '').trim();
+    const description = lines.slice(1).join('\n').trim();
 
-    // 5. Enviar la respuesta final al cliente (solo texto).
-    response.status(200).json({
-      title,
-      description,
+    // 5. Devolver el resultado a la página web
+    return new Response(JSON.stringify({ title, description }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
-    console.error('Error en la función de Vercel:', error);
-    response.status(500).json({ error: 'Hubo un problema al comunicarse con el servicio de IA. Por favor, intente de nuevo.' });
+    // 6. Si algo sale mal, imprime el error en los logs de Vercel y avisa al usuario
+    console.error("Error en la función de Vercel:", error);
+    return new Response(JSON.stringify({ error: "Hubo un error al contactar a la IA." }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }
