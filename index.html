@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asesora de Diseño IA: Aria - YAN'Z SMART WOOD</title>
+    <!-- PWA Manifest Link -->
+    <link rel="manifest" href="manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://www.paypal.com/sdk/js?client-id=BAAvcyZ4glSzNS58bpO1kul5pcNPkXNtLlfZ4KceTI6_r0UaMhynpF3zN5pwF3ezI8d8LkxI9sMdUcZai4&components=hosted-buttons&disable-funding=venmo&currency=USD"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Roboto+Slab:wght@700;800&display=swap');
         body { font-family: 'Poppins', sans-serif; }
@@ -14,37 +15,37 @@
         .media-background { @apply object-cover object-center w-full h-full; }
         .pill-button { @apply bg-white/10 backdrop-blur-sm text-white border border-white/50 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300; }
         .loader { width: 48px; height: 48px; border: 5px solid; border-color: #ffffff transparent; border-radius: 50%; display: inline-block; animation: rotation 1s linear infinite; text-shadow: none; }
+        .button-loader { width: 20px; height: 20px; border: 3px solid; border-color: #000000 transparent; border-radius: 50%; display: inline-block; animation: rotation 1s linear infinite; }
         @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
         .animate-fade-in { animation: fade-in 0.5s ease-out forwards; }
         #aria-video { filter: brightness(1.75) contrast(1.2); }
-        .tip-button { @apply inline-flex w-full sm:w-auto items-center justify-center gap-3 px-5 py-3 text-base font-semibold text-white bg-gray-700/50 border border-gray-600 rounded-lg shadow-sm transition-all duration-200; }
-        .tip-button:hover { @apply bg-white text-black border-white; }
-        .tip-button img { width: 24px; height: 24px; }
-        .icon-button { @apply flex items-center justify-center h-8 w-8 rounded-full bg-white/10 text-white transition-colors duration-200; }
-        .icon-button:hover { @apply bg-white/20; }
-        .icon-button svg { @apply h-4 w-4; }
+        .tip-button, .contact-button { @apply inline-flex w-full sm:w-auto items-center justify-center gap-3 px-5 py-3 text-base font-semibold text-white bg-gray-700/50 border border-gray-600 rounded-lg shadow-sm transition-all duration-200; }
+        .tip-button:hover, .contact-button:hover { @apply bg-white text-black border-white; }
+        .tip-button img { width: 24px; height: 24px; object-fit: contain; }
+        #mic-button.is-listening { color: #ef4444; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     </style>
 </head>
 <body class="bg-black text-white">
 
     <div class="fixed top-0 left-0 w-full h-full z-[-1] bg-black">
-        <video loop muted playsinline autoplay class="media-background opacity-30">
+        <video loop muted playsinline autoplay class="media-background opacity-50">
              <source src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/video-neutral.mp4" type="video/mp4">
         </video>
     </div>
 
-    <header class="absolute top-0 left-0 right-0 p-4 sm:p-5 flex justify-between items-center z-30">
-        <div class="flex items-center gap-3">
+    <header class="absolute top-0 left-0 right-0 p-4 sm:p-5 w-full z-30">
+        <div class="flex justify-between items-center w-full">
             <img src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/logoyanz.png" alt="YAN'Z SMART WOOD Logo" class="h-8 sm:h-10">
-            <button id="open-tip-modal" class="icon-button" title="Invita un café">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M3.5 7.5a2.5 2.5 0 012.5-2.5h2.5a.75.75 0 000-1.5H6A4 4 0 002 6.5v5.25A4.25 4.25 0 006.25 16h3.5A4.25 4.25 0 0014 11.75V7.5a.75.75 0 00-1.5 0v4.25a2.75 2.75 0 01-2.75 2.75h-3.5A2.75 2.75 0 013.5 11.75V7.5z" /><path d="M18 6.5a.75.75 0 00-.75-.75h-1.5a.75.75 0 000 1.5h1.5A.75.75 0 0018 6.5z" />
+            <!-- NEW: Install App Button -->
+            <button id="install-button" class="hidden items-center gap-2 rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg hover:bg-indigo-500 transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                  <path d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" />
+                  <path d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" />
                 </svg>
-             </button>
-        </div>
-        <div class="flex items-center gap-2 sm:gap-4">
-             <a href="https://yanzsmartwood.neocities.org" target="_blank" class="pill-button">Volver a la web</a>
+                <span>Instalar App</span>
+            </button>
         </div>
     </header>
     
@@ -60,8 +61,14 @@
         <div id="form-container" class="relative z-10 w-full max-w-lg">
             <h1 class="font-display text-4xl sm:text-5xl font-bold tracking-tight text-shadow-strong">Aria</h1>
             <p class="mt-1 text-gray-200">Tu asesora de diseño IA.</p>
-            <div class="mt-6 w-full">
-                <textarea id="prompt-input" rows="3" placeholder="Describe tu visión..." class="w-full px-5 py-3 text-sm bg-white/10 border border-gray-500 rounded-2xl focus:ring-2 focus:ring-indigo-400 focus:outline-none transition duration-200 placeholder:text-gray-400"></textarea>
+            <div class="relative mt-6 w-full">
+                <textarea id="prompt-input" rows="3" placeholder="Describe tu visión o presiona el micrófono para hablar..." class="w-full px-5 py-3 pr-12 text-sm bg-white/10 border border-gray-500 rounded-2xl focus:ring-2 focus:ring-indigo-400 focus:outline-none transition duration-200 placeholder:text-gray-400"></textarea>
+                <button id="mic-button" title="Usar micrófono" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                        <path d="M12 18.75a6 6 0 006-6v-1.5a6 6 0 00-12 0v1.5a6 6 0 006 6zM12 2.25a.75.75 0 01.75.75v6a.75.75 0 01-1.5 0v-6A.75.75 0 0112 2.25z" />
+                        <path d="M12 15a3.75 3.75 0 003.75-3.75v-1.5a3.75 3.75 0 00-7.5 0v1.5A3.75 3.75 0 0012 15z" />
+                    </svg>
+                </button>
             </div>
             <div class="mt-4">
                 <button id="generate-button" class="bg-white text-black font-semibold rounded-full px-8 py-3 hover:bg-gray-200 transition-all duration-300 disabled:bg-gray-500 disabled:cursor-not-allowed">
@@ -72,24 +79,96 @@
         </div>
     </main>
     
+    <div class="fixed bottom-4 right-4 z-40">
+        <button id="open-tip-modal" class="flex items-center gap-2 rounded-full bg-black/50 backdrop-blur-md px-4 py-2 text-sm text-gray-200 shadow-lg ring-1 ring-white/20 hover:bg-black/70 hover:text-white transition-all duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16" class="w-4 h-4">
+                <path d="M14.5 3h-13a.5.5 0 0 0 0 1h13a.5.5 0 0 0 0-1zM1 5.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5zM12 8H4v4a4 4 0 0 0 4 4h0a4 4 0 0 0 4-4V8z"/>
+                <path d="M13 7.5a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1h1z"/>
+            </svg>
+            <span>Invítame un café</span>
+        </button>
+    </div>
+
     <div id="result-wrapper" class="fixed inset-0 hidden z-40 bg-black/50 backdrop-blur-md overflow-y-auto">
          <div id="result-container" class="w-full max-w-4xl mx-auto my-12 p-4"></div>
     </div>
 
+    <!-- MODALS SECTION -->
     <div id="tip-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm hidden">
         <div class="w-full max-w-md bg-gray-900/80 border border-gray-700 rounded-2xl shadow-2xl p-6 sm:p-8 text-center animate-fade-in">
-            <h2 class="font-display text-2xl font-bold text-white mb-2">¡Invita un café a Aria!</h2>
-            <p class="text-gray-300 mb-6">Tu café impulsa la creatividad y mantiene a Aria funcionando.</p>
+            <h2 class="font-display text-2xl font-bold text-white mb-2">¡Un café para Aria!</h2>
+            <p class="text-gray-300 mb-6">Tu café impulsa la creatividad y mantiene a Aria funcionando. ¡Gracias!</p>
             <div class="flex flex-col gap-4">
-                <div id="paypal-container-2ASRPN2QFQ898" class="mx-auto"></div>
-                <a href="https://peigo.com.ec/pagar/YourPeigoID" target="_blank" rel="noopener noreferrer" class="tip-button"><img src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/peigo.png" alt="Peigo Logo"><span>Pagar con Peigo</span></a>
-                <a href="https://deuna.com/" target="_blank" rel="noopener noreferrer" class="tip-button"><img src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/deuna.png" alt="Deuna Logo"><span>Enviar con Deuna</span></a>
+                <a href="https://www.paypal.com/paypalme/YanzSmartwoodAria" target="_blank" rel="noopener noreferrer" class="tip-button">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal Logo">
+                    <span>Donar con PayPal</span>
+                </a>
+                <button id="open-peigo-qr-modal" class="tip-button">
+                    <img src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/peigo.png" alt="Peigo Logo">
+                    <span>Pagar con Peigo</span>
+                </button>
+                <button id="open-deuna-qr-modal" class="tip-button">
+                    <img src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/deuna.png" alt="Deuna Logo">
+                    <span>Enviar con Deuna</span>
+                </button>
             </div>
             <button id="close-tip-modal" class="mt-8 text-sm text-gray-400 hover:text-white transition-colors">Cerrar</button>
         </div>
     </div>
 
+    <div id="peigo-qr-modal" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm hidden">
+        <div class="w-full max-w-xs bg-white rounded-2xl shadow-2xl p-6 sm:p-8 text-center animate-fade-in relative">
+            <button id="close-peigo-qr-modal" class="absolute top-3 right-4 text-gray-400 hover:text-gray-800 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h3 class="text-lg font-bold text-gray-800 mb-2">Pagar con Peigo</h3>
+            <p class="text-gray-500 text-sm mb-4">Escanea el código con tu app</p>
+            <img src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/peigo-qr.png" alt="Código QR de Peigo" class="w-full h-auto rounded-lg mx-auto max-w-[250px]">
+            <p class="text-gray-700 mt-4 text-sm font-semibold">Aria</p>
+        </div>
+    </div>
+
+    <div id="deuna-qr-modal" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm hidden">
+        <div class="w-full max-w-xs bg-white rounded-2xl shadow-2xl p-6 sm:p-8 text-center animate-fade-in relative">
+            <button id="close-deuna-qr-modal" class="absolute top-3 right-4 text-gray-400 hover:text-gray-800 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h3 class="text-lg font-bold text-gray-800 mb-2">Pagar con Deuna</h3>
+            <p class="text-gray-500 text-sm mb-4">Usa este QR para cobrar</p>
+            <img src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/deuna-qr.png" alt="Código QR de Deuna" class="w-full h-auto rounded-lg mx-auto max-w-[250px]">
+            <p class="text-gray-700 mt-4 text-sm font-semibold">Pagar a Aria</p>
+        </div>
+    </div>
+    
+    <div id="contact-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm hidden">
+        <div class="w-full max-w-md bg-gray-900/80 border border-gray-700 rounded-2xl shadow-2xl p-6 sm:p-8 text-center animate-fade-in">
+            <h2 class="font-display text-2xl font-bold text-white mb-2">Cotización Personalizada</h2>
+            <p class="text-gray-300 mb-6">En YAN'Z SMART WOOD, cada diseño es una obra de arte. Para ofrecerte una cotización precisa y ajustada a tu visión, te invitamos a contactar a nuestros especialistas.</p>
+            <div class="flex flex-col gap-4">
+                <a href="https://wa.me/593984566838" target="_blank" rel="noopener noreferrer" class="contact-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M16.6 14c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.6.7-.8.9-.1.1-.3.2-.5.1-.2-.1-.9-.3-1.8-1.1-.7-.6-1.1-1.4-1.3-1.6-.1-.2 0-.4.1-.5l.5-.6c.1-.1.2-.3.3-.4.1-.1.2-.2.3-.4.1-.2 0-.4-.1-.5-.1-.1-.6-1.5-.8-2-.2-.5-.4-.4-.5-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 1.9 0 1.1.8 2.2 1 2.4.1.1 1.5 2.3 3.6 3.2.5.2.9.4 1.2.5.5.2 1 .1 1.4-.1.4-.2.6-.9.8-1.1.2-.2.2-.4.1-.5l-.2-.4zM12 2a10 10 0 100 20 10 10 0 000-20z"/></svg>
+                    <span>Contactar por WhatsApp</span>
+                </a>
+                <a href="mailto:yanzsmartwood@gmail.com" class="contact-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M2.25 6.166c0-1.04.84-1.889 1.875-1.889h15.75c1.035 0 1.875.85 1.875 1.89C21.75 7.21 21.053 8 20.25 8H3.75C2.947 8 2.25 7.21 2.25 6.166zM2.25 12c0-1.04.84-1.889 1.875-1.889h15.75c1.035 0 1.875.85 1.875 1.89 0 1.04-.947 1.833-1.875 1.833H3.75c-.947 0-1.5-.794-1.5-1.834zM2.25 17.833c0-1.04.84-1.889 1.875-1.889h15.75c1.035 0 1.875.85 1.875 1.89 0 1.04-.947 1.833-1.875 1.833H3.75c-.947 0-1.5-.794-1.5-1.834z"/></svg>
+                    <span>Enviar Correo Electrónico</span>
+                </a>
+            </div>
+            <button id="close-contact-modal" class="mt-8 text-sm text-gray-400 hover:text-white transition-colors">Cerrar</button>
+        </div>
+    </div>
+
+    <div id="safety-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm hidden">
+        <div class="w-full max-w-md bg-gray-900/80 border border-gray-700 rounded-2xl shadow-2xl p-6 sm:p-8 text-center animate-fade-in">
+            <h2 class="font-display text-2xl font-bold text-white mb-2">Mi Especialidad es el Diseño</h2>
+            <p id="safety-message" class="text-gray-300 mb-6"></p>
+            <button id="close-safety-modal" class="bg-white text-black font-semibold rounded-full px-8 py-3 hover:bg-gray-200 transition-all duration-300">Entendido</button>
+        </div>
+    </div>
+
+
     <script>
+        // --- Element Selectors ---
         const formContainer = document.getElementById('form-container');
         const resultWrapper = document.getElementById('result-wrapper');
         const resultContainer = document.getElementById('result-container');
@@ -100,37 +179,128 @@
         const ariaVideo = document.getElementById('aria-video');
         const videoLoader = document.getElementById('video-loader');
         const loadingMessage = document.getElementById('loading-message');
-        const openTipModalButton = document.getElementById('open-tip-modal');
-        const closeTipModalButton = document.getElementById('close-tip-modal');
         const tipModal = document.getElementById('tip-modal');
-        let synth = window.speechSynthesis;
+        const openTipModalButton = document.getElementById('open-tip-modal'); 
+        const closeTipModalButton = document.getElementById('close-tip-modal');
+        const openPeigoQrModalButton = document.getElementById('open-peigo-qr-modal');
+        const closePeigoQrModalButton = document.getElementById('close-peigo-qr-modal');
+        const peigoQrModal = document.getElementById('peigo-qr-modal');
+        const openDeunaQrModalButton = document.getElementById('open-deuna-qr-modal');
+        const closeDeunaQrModalButton = document.getElementById('close-deuna-qr-modal');
+        const deunaQrModal = document.getElementById('deuna-qr-modal');
+        const contactModal = document.getElementById('contact-modal');
+        const closeContactModalButton = document.getElementById('close-contact-modal');
+        const safetyModal = document.getElementById('safety-modal');
+        const closeSafetyModalButton = document.getElementById('close-safety-modal');
+        const micButton = document.getElementById('mic-button');
+        const installButton = document.getElementById('install-button');
 
-        openTipModalButton.addEventListener('click', () => {
-            tipModal.classList.remove('hidden');
-            if (typeof paypal !== 'undefined') {
-                const paypalContainer = document.getElementById('paypal-container-2ASRPN2QFQ898');
-                if (!paypalContainer.hasChildNodes()) {
-                    paypal.HostedButtons({ hostedButtonId: "2ASRPN2QFQ898" }).render("#paypal-container-2ASRPN2QFQ898");
-                }
+        // --- State ---
+        let synth = window.speechSynthesis;
+        let hasInteracted = false;
+        let originalImagePrompt = '';
+        let recognition;
+        let deferredInstallPrompt = null;
+
+        // --- PWA Installation Logic ---
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredInstallPrompt = e;
+            installButton.style.display = 'flex';
+        });
+
+        installButton.addEventListener('click', async () => {
+            if (deferredInstallPrompt) {
+                deferredInstallPrompt.prompt();
+                const { outcome } = await deferredInstallPrompt.userChoice;
+                console.log(`User response to the install prompt: ${outcome}`);
+                deferredInstallPrompt = null;
+                installButton.style.display = 'none';
             }
         });
+
+        window.addEventListener('appinstalled', () => {
+            console.log('Aria PWA was installed');
+            installButton.style.display = 'none';
+        });
+
+        // --- Speech Recognition Setup ---
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.lang = 'es-EC';
+            recognition.interimResults = false;
+
+            micButton.addEventListener('click', () => {
+                if (micButton.classList.contains('is-listening')) {
+                    recognition.stop();
+                } else {
+                    recognition.start();
+                }
+            });
+
+            recognition.onstart = () => { micButton.classList.add('is-listening'); promptInput.placeholder = "Escuchando..."; };
+            recognition.onend = () => { micButton.classList.remove('is-listening'); promptInput.placeholder = "Describe tu visión o presiona el micrófono para hablar..."; };
+            recognition.onresult = (event) => { promptInput.value = event.results[0][0].transcript; };
+            recognition.onerror = (event) => { console.error("Error de reconocimiento de voz:", event.error); errorMessage.textContent = "No se pudo usar el micrófono."; };
+        } else {
+            micButton.style.display = 'none';
+        }
+
+        // --- Event Listeners ---
+        openTipModalButton.addEventListener('click', () => tipModal.classList.remove('hidden'));
         closeTipModalButton.addEventListener('click', () => tipModal.classList.add('hidden'));
         tipModal.addEventListener('click', (e) => { if (e.target === tipModal) tipModal.classList.add('hidden'); });
+        
+        openPeigoQrModalButton.addEventListener('click', () => peigoQrModal.classList.remove('hidden'));
+        closePeigoQrModalButton.addEventListener('click', () => peigoQrModal.classList.add('hidden'));
+        peigoQrModal.addEventListener('click', (e) => { if (e.target === peigoQrModal) peigoQrModal.classList.add('hidden'); });
+        
+        openDeunaQrModalButton.addEventListener('click', () => deunaQrModal.classList.remove('hidden'));
+        closeDeunaQrModalButton.addEventListener('click', () => deunaQrModal.classList.add('hidden'));
+        deunaQrModal.addEventListener('click', (e) => { if (e.target === deunaQrModal) deunaQrModal.classList.add('hidden'); });
+
+        closeContactModalButton.addEventListener('click', () => contactModal.classList.add('hidden'));
+        contactModal.addEventListener('click', (e) => { if (e.target === contactModal) contactModal.classList.add('hidden'); });
+
+        closeSafetyModalButton.addEventListener('click', () => safetyModal.classList.add('hidden'));
+        safetyModal.addEventListener('click', (e) => { if (e.target === safetyModal) safetyModal.classList.add('hidden'); });
 
         document.body.addEventListener('click', () => {
-            if (synth.getVoices().length === 0) {
-                synth.onvoiceschanged = () => speak("Hola, soy Aria, tu asesora de diseño. Describe tu visión y la haré realidad.");
-            } else {
+            if (!hasInteracted) {
                  speak("Hola, soy Aria, tu asesora de diseño. Describe tu visión y la haré realidad.");
+                 hasInteracted = true;
             }
         }, { once: true });
 
         generateButton.addEventListener('click', handleQuery);
         promptInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleQuery(); } });
 
+        // --- Main Functions ---
         async function handleQuery() {
             const query = promptInput.value.trim();
             if (!query) { errorMessage.textContent = 'Por favor, describe el diseño que imaginas.'; return; }
+
+            const pricingKeywords = /\b(precio|costo|cotiza|cotización|cuánto cuesta)\b/i;
+            if (pricingKeywords.test(query)) {
+                contactModal.classList.remove('hidden');
+                speak("En YAN'Z SMART WOOD, cada diseño es una obra de arte. Para ofrecerte una cotización precisa, te invito a contactar a nuestros especialistas.");
+                return;
+            }
+            
+            setLoading(true, 'Analizando tu visión...');
+
+            const isOnTopic = await isPromptOnTopic(query);
+            if (!isOnTopic) {
+                const safetyMessage = "Mi pasión es dar vida a espacios y muebles únicos con YAN'Z SMART WOOD. No puedo generar contenido sobre otros temas. ¿Por qué no exploramos juntos una idea de diseño para tu hogar?";
+                document.getElementById('safety-message').innerText = safetyMessage;
+                safetyModal.classList.remove('hidden');
+                speak(safetyMessage);
+                setLoading(false);
+                return;
+            }
+
             setLoading(true, 'Creando tu concepto...');
             formContainer.classList.add('hidden');
             ariaContainer.classList.remove('hidden');
@@ -141,20 +311,17 @@
             }
             ariaVideo.play();
             try {
-                const result = await callVercelAPI(query);
-                if (result) displayDesignResult(result, query);
-                else throw new Error("La IA no devolvió un resultado válido.");
-            } catch (err) {
-                // --- DIAGNÓSTICO DE ERRORES MEJORADO ---
-                console.error("Error completo:", err);
-                let userMessage = 'Ha ocurrido un error inesperado.';
-                if (err instanceof TypeError) { // Error de red
-                    userMessage = 'Error de conexión. Revisa la URL de la API y el estado de Vercel.';
-                } else if (err.message) { // Error con mensaje (del servidor o JS)
-                    userMessage = `Error: ${err.message}`;
+                const textResult = await callGeminiAPI(query);
+                if (textResult) {
+                    displayDesignResult(textResult, query);
+                    originalImagePrompt = `Fotografía profesional de diseño de interiores con efectos visuales cinematográficos, 8k, fotorrealista. Concepto: "${textResult.title}". Estilo: ${query}. Descripción: ${textResult.description}`;
+                    generateAndDisplayImage(originalImagePrompt);
+                } else {
+                    throw new Error("La IA no devolvió un concepto de diseño válido.");
                 }
-                errorMessage.textContent = userMessage;
-                // --- FIN DEL DIAGNÓSTICO ---
+            } catch (err) {
+                console.error("Error completo:", err);
+                errorMessage.textContent = `Error: ${err.message}`;
                 formContainer.classList.remove('hidden');
             } finally {
                 setLoading(false); 
@@ -164,24 +331,47 @@
             }
         }
 
-        async function callVercelAPI(userPrompt) {
-            // Asegúrate de que tu API esté en la ruta correcta en Vercel.
-            // Si tu archivo está en /api/generate.js, la ruta es /api/generate
-            const response = await fetch('/api/generate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: userPrompt })
-            });
+        async function isPromptOnTopic(prompt) {
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            const moderationPrompt = `Does the following prompt relate to interior/exterior design, furniture (like for kitchens, TVs), materials (like wood, synthetic floors, ceramic, granite), or construction elements (like gypsum, lighting, electricity)? Answer only with "yes" or "no". Unrelated topics are things like people, animals, characters, or specific objects not related to home design.\n\nPrompt: "${prompt}"`;
+            const payload = { contents: [{ role: "user", parts: [{ text: moderationPrompt }] }] };
 
-            if (!response.ok) {
-                // Intenta obtener un mensaje de error del cuerpo de la respuesta
-                const errorData = await response.json().catch(() => ({ error: `El servidor respondió con un error: ${response.status}` }));
-                throw new Error(errorData.error || `Error desconocido del servidor.`);
+            try {
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) return true;
+                const result = await response.json();
+                const answer = result.candidates[0].content.parts[0].text.trim().toLowerCase();
+                return answer.includes('yes');
+            } catch (err) {
+                console.error("Safety check failed:", err);
+                return true;
             }
-            return response.json();
         }
 
-        function setLoading(isLoading, message = '') { /* ... (sin cambios) ... */
+        async function callGeminiAPI(userPrompt) {
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            const systemInstruction = `Eres "Aria", una experta asesora de diseño de interiores para "YAN'Z SMART WOOD". Tu especialidad es la madera inteligente y el diseño moderno. Tu objetivo es inspirar a los clientes. Responde con un objeto JSON con "title" (máx. 5 palabras) y "description" (3-5 frases sobre ambiente, materiales, iluminación y muebles).`;
+            const payload = {
+                contents: [{ role: "user", parts: [{ text: `System instruction: ${systemInstruction}\nUser vision: "${userPrompt}"` }] }],
+                generationConfig: { responseMimeType: "application/json", responseSchema: { type: "OBJECT", properties: { "title": { "type": "STRING" }, "description": { "type": "STRING" } }, required: ["title", "description"] } }
+            };
+            const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                const msg = errorData?.error?.message || `El servidor respondió con un error: ${response.status}`;
+                throw new Error(msg);
+            }
+            const result = await response.json();
+            if (result.candidates?.[0]?.content?.parts?.[0]) {
+                return JSON.parse(result.candidates[0].content.parts[0].text);
+            } else {
+                throw new Error("No se pudo obtener una respuesta válida de la IA.");
+            }
+        }
+
+        function setLoading(isLoading, message = '') {
             errorMessage.textContent = '';
             generateButton.disabled = isLoading;
             if (isLoading) {
@@ -196,21 +386,40 @@
             }
         }
 
-        function displayDesignResult({ title, description }, originalPrompt) { /* ... (sin cambios) ... */
-            const imagePrompt = `professional interior design photo, 8k, photorealistic, ${title}. ${originalPrompt}`;
-            const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}`;
-            const descriptionHTML = description.replace(/\n/g, '<br><br>');
+        function displayDesignResult({ title, description }) {
             resultWrapper.classList.remove('hidden');
             resultContainer.innerHTML = `
                 <div class="w-full bg-black/60 backdrop-blur-md rounded-2xl shadow-xl border border-gray-700 animate-fade-in overflow-hidden">
-                    <div class="bg-black/30 flex items-center justify-center p-4 min-h-[250px] sm:min-h-[400px]">
-                        <img src="${imageUrl}" alt="Visualización del diseño: ${title}" class="rounded-lg object-cover shadow-lg max-h-[400px]" onerror="this.alt='La visualización del diseño no pudo cargarse.'; this.style.display='none'"/>
+                    <div id="image-container" class="bg-black/30 flex items-center justify-center p-4 min-h-[250px] sm:min-h-[400px]">
+                        <div class="loader"></div>
                     </div>
                     <div class="p-6 sm:p-8 text-left">
                         <h2 class="font-display text-2xl font-bold text-white">${title}</h2>
-                        <div class="mt-4 text-gray-200 space-y-4 leading-relaxed text-sm">${descriptionHTML}</div>
+                        <div class="mt-4 text-gray-200 space-y-4 leading-relaxed text-sm">${description}</div>
+                        
+                        <div class="mt-6 pt-6 border-t border-gray-700">
+                            <h3 class="font-semibold text-white mb-2 text-center">Perfeccionar con FX</h3>
+                            <div class="flex flex-col sm:flex-row gap-2">
+                                <input id="fx-prompt-input" type="text" placeholder="Ej: 'con madera más oscura' o 'quita un mueble'" class="w-full px-4 py-2 text-sm bg-white/10 border border-gray-500 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none transition duration-200 placeholder:text-gray-400">
+                                <button id="regenerate-fx-button" class="w-full sm:w-auto bg-white/10 backdrop-blur-sm text-white border border-white/50 font-semibold rounded-lg px-5 py-2 hover:bg-white hover:text-black transition-all duration-300 text-sm flex-shrink-0 flex items-center justify-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path d="M10 3.5a1.5 1.5 0 01.954 2.723l-5.88 5.88a1.5 1.5 0 01-2.122-2.12l5.88-5.88A1.5 1.5 0 0110 3.5zM3.443 12.557l5.88-5.88a.5.5 0 01.707.707l-5.88 5.88a.5.5 0 01-.707-.707zM10 16.5a1.5 1.5 0 01-1.06-.44l-5.88-5.88a1.5 1.5 0 112.12-2.12l5.88 5.88A1.5 1.5 0 0110 16.5z" /></svg>
+                                    <span>Aplicar FX</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="details-container" class="mt-6 pt-6 border-t border-gray-700"></div>
+                        <div id="details-button-container" class="text-center mt-6">
+                           <button id="get-details-button" class="bg-white text-black font-semibold rounded-full px-6 py-2.5 hover:bg-gray-200 transition-all duration-300 text-sm flex items-center justify-center gap-2">
+                               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M10 2a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 2zM10 15a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 15zM10 7a3 3 0 100 6 3 3 0 000-6zM15.657 5.404a.75.75 0 10-1.06-1.06l-1.061 1.06a.75.75 0 001.06 1.06l1.06-1.06zM5.404 15.657a.75.75 0 10-1.06-1.06l-1.06 1.06a.75.75 0 001.06 1.06l1.06-1.06zM16.75 10a.75.75 0 01-1.5 0h-1.5a.75.75 0 010-1.5h1.5a.75.75 0 011.5 0zM5.75 10a.75.75 0 01-1.5 0h-1.5a.75.75 0 010-1.5h1.5a.75.75 0 011.5 0zM14.596 14.596a.75.75 0 001.06 1.06l1.06-1.06a.75.75 0 00-1.06-1.06l-1.06 1.06zM4.343 4.343a.75.75 0 001.06 1.06l1.06-1.06a.75.75 0 00-1.06-1.06l-1.06 1.06z" /></svg>
+                               <span>Ver Ideas de YAN'Z</span>
+                           </button>
+                        </div>
                         <div class="text-center mt-8">
                            <button id="close-result" class="pill-button">Volver</button>
+                        </div>
+                        <div class="text-center mt-8">
+                            <p class="text-xs text-gray-400 italic">*Las imágenes y conceptos son representaciones artísticas. El diseño final puede variar.</p>
                         </div>
                     </div>
                 </div>
@@ -220,21 +429,163 @@
                 formContainer.classList.remove('hidden');
                 stopSpeech();
             });
-            speak(title + ". " + description);
+            document.getElementById('get-details-button').addEventListener('click', (e) => {
+                getDesignDetails(title, description, e.currentTarget);
+            });
+            document.getElementById('regenerate-fx-button').addEventListener('click', handleImageRegeneration);
+             speak(title + ". " + description);
         }
         
-        function speak(text) { /* ... (sin cambios) ... */
+        async function handleImageRegeneration() {
+            const fxInput = document.getElementById('fx-prompt-input');
+            const modificationText = fxInput.value.trim();
+            if (!modificationText) {
+                speak("Por favor, describe el cambio que quieres hacer.");
+                return;
+            }
+            const regenerateButton = document.getElementById('regenerate-fx-button');
+            regenerateButton.disabled = true;
+            regenerateButton.innerHTML = '<div class="button-loader mx-auto" style="border-color: #ffffff transparent;"></div>';
+
+            const newImagePrompt = `${originalImagePrompt}. MODIFICACIÓN IMPORTANTE: ${modificationText}.`;
+            await generateAndDisplayImage(newImagePrompt, true);
+            
+            regenerateButton.disabled = false;
+            regenerateButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path d="M10 3.5a1.5 1.5 0 01.954 2.723l-5.88 5.88a1.5 1.5 0 01-2.122-2.12l5.88-5.88A1.5 1.5 0 0110 3.5zM3.443 12.557l5.88-5.88a.5.5 0 01.707.707l-5.88 5.88a.5.5 0 01-.707-.707zM10 16.5a1.5 1.5 0 01-1.06-.44l-5.88-5.88a1.5 1.5 0 112.12-2.12l5.88 5.88A1.5 1.5 0 0110 16.5z" /></svg><span>Aplicar FX</span>`;
+        }
+
+        async function generateAndDisplayImage(prompt, isRegeneration = false) {
+            const imageContainer = document.getElementById('image-container');
+            if (isRegeneration) {
+                imageContainer.innerHTML = '<div class="loader"></div>'; 
+            }
+            try {
+                const base64Image = await callImagenAPI(prompt);
+                if (base64Image) {
+                    imageContainer.innerHTML = `<img src="data:image/png;base64,${base64Image}" alt="Visualización del diseño" class="rounded-lg object-cover shadow-lg max-h-[400px] animate-fade-in" />`;
+                } else {
+                    throw new Error('La generación de imagen no devolvió datos.');
+                }
+            } catch (err) {
+                console.error('Error al generar la imagen:', err);
+                imageContainer.innerHTML = `<p class="text-center text-red-400 p-8">No se pudo generar la visualización del diseño. Inténtalo de nuevo.</p>`;
+            }
+        }
+
+        async function callImagenAPI(prompt) {
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
+            const payload = { instances: [{ prompt: prompt }], parameters: { sampleCount: 1 } };
+            const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                const msg = errorData?.error?.message || `El servidor de imágenes respondió con un error: ${response.status}`;
+                throw new Error(msg);
+            }
+            const result = await response.json();
+            if (result.predictions?.[0]?.bytesBase64Encoded) {
+                return result.predictions[0].bytesBase64Encoded;
+            } else {
+                return null;
+            }
+        }
+        
+        async function getDesignDetails(title, description, button) {
+            button.disabled = true;
+            button.innerHTML = '<div class="button-loader"></div>';
+            try {
+                const apiKey = ""; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                const detailsPrompt = `Basado en el concepto de diseño "${title}" (${description}), genera una lista de sugerencias concretas. Responde con un objeto JSON con tres propiedades: "materials" (array de 3-4 materiales específicos, incluyendo tipos de madera de YAN'Z SMART WOOD), "furniture" (array de 3-4 piezas de mobiliario clave), y "palette" (array de 4 objetos de color, cada uno con "name" y "hex").`;
+                const payload = {
+                    contents: [{ role: "user", parts: [{ text: detailsPrompt }] }],
+                    generationConfig: { responseMimeType: "application/json", responseSchema: { type: "OBJECT", properties: { "materials": { "type": "ARRAY", "items": { "type": "STRING" } }, "furniture": { "type": "ARRAY", "items": { "type": "STRING" } }, "palette": { "type": "ARRAY", "items": { "type": "OBJECT", "properties": { "name": { "type": "STRING" }, "hex": { "type": "STRING" } }, "required": ["name", "hex"] } } }, required: ["materials", "furniture", "palette"] } }
+                };
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) throw new Error(`La API de detalles respondió con un error: ${response.status}`);
+                const result = await response.json();
+                if (result.candidates?.[0]?.content?.parts?.[0]) {
+                    const details = JSON.parse(result.candidates[0].content.parts[0].text);
+                    displayDetails(details);
+                    document.getElementById('details-button-container').style.display = 'none';
+                } else {
+                    throw new Error("No se pudieron generar los detalles del diseño.");
+                }
+            } catch (err) {
+                console.error("Error al obtener detalles:", err);
+                document.getElementById('details-container').innerHTML = `<p class="text-center text-red-400 text-sm">No se pudieron cargar los detalles.</p>`;
+                button.disabled = false;
+                button.innerHTML = '✨ Dame más detalles';
+            }
+        }
+        
+        function displayDetails(details) {
+            const container = document.getElementById('details-container');
+            const materialsHTML = details.materials.map(item => `<li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg><span>${item}</span></li>`).join('');
+            const furnitureHTML = details.furniture.map(item => `<li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg><span>${item}</span></li>`).join('');
+            const paletteHTML = details.palette.map(color => `<div class="flex flex-col items-center"><div class="w-10 h-10 rounded-full border-2 border-white/50 shadow-md" style="background-color: ${color.hex};"></div><span class="mt-1.5 text-xs text-gray-300 capitalize">${color.name}</span></div>`).join('');
+            container.innerHTML = `<div class="animate-fade-in grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-gray-200"><div><h3 class="font-semibold text-white mb-2">Materiales Sugeridos</h3><ul class="space-y-1.5">${materialsHTML}</ul></div><div><h3 class="font-semibold text-white mb-2">Mobiliario Clave</h3><ul class="space-y-1.5">${furnitureHTML}</ul></div><div class="md:col-span-2"><h3 class="font-semibold text-white mb-3 text-center">Paleta de Colores</h3><div class="flex justify-center gap-4 md:gap-6">${paletteHTML}</div></div></div>`;
+        }
+        
+        function speak(text) {
             stopSpeech();
-            const utterance = new SpeechSynthesisUtterance(text);
-            const voices = synth.getVoices().filter(v => v.lang.startsWith('es'));
-            const preferredVoice = voices.find(v => v.name.includes('Sabina') || v.name.includes('Paulina')) || voices.find(v => v.lang === 'es-US') || voices[0];
-            utterance.voice = preferredVoice;
-            utterance.rate = 0.95;
-            utterance.pitch = 1.0;
-            synth.speak(utterance);
+            const checkVoices = setInterval(() => {
+                const voices = synth.getVoices().filter(v => v.lang.startsWith('es'));
+                if (voices.length > 0) {
+                    clearInterval(checkVoices);
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    const preferredVoice = voices.find(v => v.name.includes('Sabina') || v.name.includes('Paulina')) || voices.find(v => v.lang === 'es-US') || voices[0];
+                    utterance.voice = preferredVoice;
+                    utterance.rate = 0.95;
+                    utterance.pitch = 1.0;
+                    synth.speak(utterance);
+                }
+            }, 100);
         }
         
         function stopSpeech() { if (synth.speaking) synth.cancel(); }
+        
+        // --- PWA Service Worker Registration ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => console.log('ServiceWorker registration successful with scope: ', registration.scope))
+                    .catch(err => console.log('ServiceWorker registration failed: ', err));
+            });
+        }
     </script>
 </body>
 </html>
+```
+
+---
+
+### Archivos Adicionales para la Instalación
+
+Para que la función "Instalar App" funcione correctamente, necesitas crear y subir estos dos archivos al mismo directorio donde alojes tu archivo HTML principal.
+
+**1. `manifest.json`** (controla la apariencia de la app instalada)
+
+```json
+{
+  "name": "Aria - Asesora de Diseño IA",
+  "short_name": "Aria",
+  "description": "Tu asesora de diseño IA para YAN'Z SMART WOOD.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
+                
