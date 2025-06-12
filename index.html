@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asesora de Diseño IA: Aria - YAN'Z SMART WOOD</title>
-    <!-- PWA Manifest Link -->
     <link rel="manifest" href="manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -38,7 +37,6 @@
     <header class="absolute top-0 left-0 right-0 p-4 sm:p-5 w-full z-30">
         <div class="flex justify-between items-center w-full">
             <img src="https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/logoyanz.png" alt="YAN'Z SMART WOOD Logo" class="h-8 sm:h-10">
-            <!-- NEW: Install App Button -->
             <button id="install-button" class="hidden items-center gap-2 rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg hover:bg-indigo-500 transition-all duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
                   <path d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" />
@@ -168,6 +166,9 @@
 
 
     <script>
+        // --- API Key ---
+        const GOOGLE_API_KEY = ""; // Replaced with your key
+
         // --- Element Selectors ---
         const formContainer = document.getElementById('form-container');
         const resultWrapper = document.getElementById('result-wrapper');
@@ -212,15 +213,12 @@
         installButton.addEventListener('click', async () => {
             if (deferredInstallPrompt) {
                 deferredInstallPrompt.prompt();
-                const { outcome } = await deferredInstallPrompt.userChoice;
-                console.log(`User response to the install prompt: ${outcome}`);
                 deferredInstallPrompt = null;
                 installButton.style.display = 'none';
             }
         });
 
         window.addEventListener('appinstalled', () => {
-            console.log('Aria PWA was installed');
             installButton.style.display = 'none';
         });
 
@@ -243,7 +241,7 @@
             recognition.onstart = () => { micButton.classList.add('is-listening'); promptInput.placeholder = "Escuchando..."; };
             recognition.onend = () => { micButton.classList.remove('is-listening'); promptInput.placeholder = "Describe tu visión o presiona el micrófono para hablar..."; };
             recognition.onresult = (event) => { promptInput.value = event.results[0][0].transcript; };
-            recognition.onerror = (event) => { console.error("Error de reconocimiento de voz:", event.error); errorMessage.textContent = "No se pudo usar el micrófono."; };
+            recognition.onerror = (event) => { console.error("Error de reconocimiento de voz:", event.error); };
         } else {
             micButton.style.display = 'none';
         }
@@ -332,8 +330,7 @@
         }
 
         async function isPromptOnTopic(prompt) {
-            const apiKey = ""; 
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`;
             const moderationPrompt = `Does the following prompt relate to interior/exterior design, furniture (like for kitchens, TVs), materials (like wood, synthetic floors, ceramic, granite), or construction elements (like gypsum, lighting, electricity)? Answer only with "yes" or "no". Unrelated topics are things like people, animals, characters, or specific objects not related to home design.\n\nPrompt: "${prompt}"`;
             const payload = { contents: [{ role: "user", parts: [{ text: moderationPrompt }] }] };
 
@@ -349,9 +346,9 @@
             }
         }
 
+
         async function callGeminiAPI(userPrompt) {
-            const apiKey = ""; 
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`;
             const systemInstruction = `Eres "Aria", una experta asesora de diseño de interiores para "YAN'Z SMART WOOD". Tu especialidad es la madera inteligente y el diseño moderno. Tu objetivo es inspirar a los clientes. Responde con un objeto JSON con "title" (máx. 5 palabras) y "description" (3-5 frases sobre ambiente, materiales, iluminación y muebles).`;
             const payload = {
                 contents: [{ role: "user", parts: [{ text: `System instruction: ${systemInstruction}\nUser vision: "${userPrompt}"` }] }],
@@ -473,8 +470,7 @@
         }
 
         async function callImagenAPI(prompt) {
-            const apiKey = "";
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${GOOGLE_API_KEY}`;
             const payload = { instances: [{ prompt: prompt }], parameters: { sampleCount: 1 } };
             const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
             if (!response.ok) {
@@ -494,8 +490,7 @@
             button.disabled = true;
             button.innerHTML = '<div class="button-loader"></div>';
             try {
-                const apiKey = ""; 
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`;
                 const detailsPrompt = `Basado en el concepto de diseño "${title}" (${description}), genera una lista de sugerencias concretas. Responde con un objeto JSON con tres propiedades: "materials" (array de 3-4 materiales específicos, incluyendo tipos de madera de YAN'Z SMART WOOD), "furniture" (array de 3-4 piezas de mobiliario clave), y "palette" (array de 4 objetos de color, cada uno con "name" y "hex").`;
                 const payload = {
                     contents: [{ role: "user", parts: [{ text: detailsPrompt }] }],
@@ -545,47 +540,13 @@
         
         function stopSpeech() { if (synth.speaking) synth.cancel(); }
         
-        // --- PWA Service Worker Registration ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/service-worker.js')
-                    .then(registration => console.log('ServiceWorker registration successful with scope: ', registration.scope))
+                    .then(registration => console.log('ServiceWorker registration successful'))
                     .catch(err => console.log('ServiceWorker registration failed: ', err));
             });
         }
     </script>
 </body>
 </html>
-```
-
----
-
-### Archivos Adicionales para la Instalación
-
-Para que la función "Instalar App" funcione correctamente, necesitas crear y subir estos dos archivos al mismo directorio donde alojes tu archivo HTML principal.
-
-**1. `manifest.json`** (controla la apariencia de la app instalada)
-
-```json
-{
-  "name": "Aria - Asesora de Diseño IA",
-  "short_name": "Aria",
-  "description": "Tu asesora de diseño IA para YAN'Z SMART WOOD.",
-  "start_url": ".",
-  "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#000000",
-  "icons": [
-    {
-      "src": "https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
-}
-                
