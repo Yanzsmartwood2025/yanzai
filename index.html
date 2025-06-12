@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+   <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -166,9 +166,6 @@
 
 
     <script>
-        // --- API Key ---
-        const GOOGLE_API_KEY = ""; // Replaced with your key
-
         // --- Element Selectors ---
         const formContainer = document.getElementById('form-container');
         const resultWrapper = document.getElementById('result-wrapper');
@@ -288,84 +285,49 @@
             }
             
             setLoading(true, 'Analizando tu visión...');
-
-            const isOnTopic = await isPromptOnTopic(query);
-            if (!isOnTopic) {
-                const safetyMessage = "Mi pasión es dar vida a espacios y muebles únicos con YAN'Z SMART WOOD. No puedo generar contenido sobre otros temas. ¿Por qué no exploramos juntos una idea de diseño para tu hogar?";
-                document.getElementById('safety-message').innerText = safetyMessage;
-                safetyModal.classList.remove('hidden');
-                speak(safetyMessage);
-                setLoading(false);
-                return;
-            }
-
-            setLoading(true, 'Creando tu concepto...');
-            formContainer.classList.add('hidden');
-            ariaContainer.classList.remove('hidden');
-            const talkingVideoSrc = 'https://raw.githubusercontent.com/Yanzsmartwood2025/yanzai/main/video-neutral.mp4';
-            if(ariaVideo.querySelector('source')?.src !== talkingVideoSrc) {
-                ariaVideo.innerHTML = `<source src="${talkingVideoSrc}" type="video/mp4">`;
-                ariaVideo.load();
-            }
-            ariaVideo.play();
+            
             try {
-                const textResult = await callGeminiAPI(query);
-                if (textResult) {
-                    displayDesignResult(textResult, query);
-                    originalImagePrompt = `Fotografía profesional de diseño de interiores con efectos visuales cinematográficos, 8k, fotorrealista. Concepto: "${textResult.title}". Estilo: ${query}. Descripción: ${textResult.description}`;
-                    generateAndDisplayImage(originalImagePrompt);
-                } else {
-                    throw new Error("La IA no devolvió un concepto de diseño válido.");
+                const response = await callVercelAPI({ prompt: query, task: 'full_generation' });
+                if(response.error) throw new Error(response.error);
+
+                if (response.type === 'safety_violation') {
+                    const safetyMessage = "Mi pasión es dar vida a espacios y muebles únicos con YAN'Z SMART WOOD. No puedo generar contenido sobre otros temas. ¿Por qué no exploramos juntos una idea de diseño para tu hogar?";
+                    document.getElementById('safety-message').innerText = safetyMessage;
+                    safetyModal.classList.remove('hidden');
+                    speak(safetyMessage);
+                    return;
                 }
+                
+                if(response.textResult && response.imageResult) {
+                    displayDesignResult(response.textResult, query);
+                    originalImagePrompt = `Fotografía profesional de diseño de interiores con efectos visuales cinematográficos, 8k, fotorrealista. Concepto: "${response.textResult.title}". Estilo: ${query}. Descripción: ${response.textResult.description}`;
+                    displayGeneratedImage(response.imageResult);
+                } else {
+                    throw new Error("La respuesta de la IA no fue válida.");
+                }
+
             } catch (err) {
                 console.error("Error completo:", err);
                 errorMessage.textContent = `Error: ${err.message}`;
-                formContainer.classList.remove('hidden');
             } finally {
-                setLoading(false); 
-                ariaContainer.classList.add('hidden'); 
-                ariaVideo.pause();
-                ariaVideo.currentTime = 0;
+                setLoading(false);
+                formContainer.classList.remove('hidden');
+                ariaContainer.classList.add('hidden');
             }
         }
-
-        async function isPromptOnTopic(prompt) {
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`;
-            const moderationPrompt = `Does the following prompt relate to interior/exterior design, furniture (like for kitchens, TVs), materials (like wood, synthetic floors, ceramic, granite), or construction elements (like gypsum, lighting, electricity)? Answer only with "yes" or "no". Unrelated topics are things like people, animals, characters, or specific objects not related to home design.\n\nPrompt: "${prompt}"`;
-            const payload = { contents: [{ role: "user", parts: [{ text: moderationPrompt }] }] };
-
-            try {
-                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                if (!response.ok) return true;
-                const result = await response.json();
-                const answer = result.candidates[0].content.parts[0].text.trim().toLowerCase();
-                return answer.includes('yes');
-            } catch (err) {
-                console.error("Safety check failed:", err);
-                return true;
-            }
-        }
-
-
-        async function callGeminiAPI(userPrompt) {
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`;
-            const systemInstruction = `Eres "Aria", una experta asesora de diseño de interiores para "YAN'Z SMART WOOD". Tu especialidad es la madera inteligente y el diseño moderno. Tu objetivo es inspirar a los clientes. Responde con un objeto JSON con "title" (máx. 5 palabras) y "description" (3-5 frases sobre ambiente, materiales, iluminación y muebles).`;
-            const payload = {
-                contents: [{ role: "user", parts: [{ text: `System instruction: ${systemInstruction}\nUser vision: "${userPrompt}"` }] }],
-                generationConfig: { responseMimeType: "application/json", responseSchema: { type: "OBJECT", properties: { "title": { "type": "STRING" }, "description": { "type": "STRING" } }, required: ["title", "description"] } }
-            };
-            const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        
+        // This function now calls our Vercel Serverless Function
+        async function callVercelAPI(body) {
+             const response = await fetch('/api/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                const msg = errorData?.error?.message || `El servidor respondió con un error: ${response.status}`;
-                throw new Error(msg);
+                const errorData = await response.json().catch(() => ({ error: `El servidor respondió con un error: ${response.status}` }));
+                throw new Error(errorData.error || `Error desconocido del servidor.`);
             }
-            const result = await response.json();
-            if (result.candidates?.[0]?.content?.parts?.[0]) {
-                return JSON.parse(result.candidates[0].content.parts[0].text);
-            } else {
-                throw new Error("No se pudo obtener una respuesta válida de la IA.");
-            }
+            return response.json();
         }
 
         function setLoading(isLoading, message = '') {
@@ -376,10 +338,16 @@
                 videoLoader.classList.remove('hidden');
                 videoLoader.classList.add('flex');
                 loadingMessage.textContent = message;
+                ariaContainer.classList.remove('hidden');
+                formContainer.classList.add('hidden');
+                ariaVideo.play();
             } else {
                 generateButton.innerHTML = `<span>Generar Concepto</span>`;
                 videoLoader.classList.add('hidden');
                 videoLoader.classList.remove('flex');
+                ariaContainer.classList.add('hidden');
+                formContainer.classList.remove('hidden');
+                ariaVideo.pause();
             }
         }
 
@@ -445,44 +413,26 @@
             regenerateButton.innerHTML = '<div class="button-loader mx-auto" style="border-color: #ffffff transparent;"></div>';
 
             const newImagePrompt = `${originalImagePrompt}. MODIFICACIÓN IMPORTANTE: ${modificationText}.`;
-            await generateAndDisplayImage(newImagePrompt, true);
             
-            regenerateButton.disabled = false;
-            regenerateButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path d="M10 3.5a1.5 1.5 0 01.954 2.723l-5.88 5.88a1.5 1.5 0 01-2.122-2.12l5.88-5.88A1.5 1.5 0 0110 3.5zM3.443 12.557l5.88-5.88a.5.5 0 01.707.707l-5.88 5.88a.5.5 0 01-.707-.707zM10 16.5a1.5 1.5 0 01-1.06-.44l-5.88-5.88a1.5 1.5 0 112.12-2.12l5.88 5.88A1.5 1.5 0 0110 16.5z" /></svg><span>Aplicar FX</span>`;
-        }
-
-        async function generateAndDisplayImage(prompt, isRegeneration = false) {
-            const imageContainer = document.getElementById('image-container');
-            if (isRegeneration) {
-                imageContainer.innerHTML = '<div class="loader"></div>'; 
-            }
             try {
-                const base64Image = await callImagenAPI(prompt);
-                if (base64Image) {
-                    imageContainer.innerHTML = `<img src="data:image/png;base64,${base64Image}" alt="Visualización del diseño" class="rounded-lg object-cover shadow-lg max-h-[400px] animate-fade-in" />`;
-                } else {
-                    throw new Error('La generación de imagen no devolvió datos.');
-                }
-            } catch (err) {
-                console.error('Error al generar la imagen:', err);
-                imageContainer.innerHTML = `<p class="text-center text-red-400 p-8">No se pudo generar la visualización del diseño. Inténtalo de nuevo.</p>`;
+                 const response = await callVercelAPI({ prompt: newImagePrompt, task: 'image_regeneration' });
+                 if(response.error) throw new Error(response.error);
+                 displayGeneratedImage(response.imageResult);
+            } catch(err) {
+                 console.error('Error al regenerar la imagen:', err);
+                 document.getElementById('image-container').innerHTML = `<p class="text-center text-red-400 p-8">No se pudo regenerar la visualización. Inténtalo de nuevo.</p>`;
+            } finally {
+                regenerateButton.disabled = false;
+                regenerateButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path d="M10 3.5a1.5 1.5 0 01.954 2.723l-5.88 5.88a1.5 1.5 0 01-2.122-2.12l5.88-5.88A1.5 1.5 0 0110 3.5zM3.443 12.557l5.88-5.88a.5.5 0 01.707.707l-5.88 5.88a.5.5 0 01-.707-.707zM10 16.5a1.5 1.5 0 01-1.06-.44l-5.88-5.88a1.5 1.5 0 112.12-2.12l5.88 5.88A1.5 1.5 0 0110 16.5z" /></svg><span>Aplicar FX</span>`;
             }
         }
 
-        async function callImagenAPI(prompt) {
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${GOOGLE_API_KEY}`;
-            const payload = { instances: [{ prompt: prompt }], parameters: { sampleCount: 1 } };
-            const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                const msg = errorData?.error?.message || `El servidor de imágenes respondió con un error: ${response.status}`;
-                throw new Error(msg);
-            }
-            const result = await response.json();
-            if (result.predictions?.[0]?.bytesBase64Encoded) {
-                return result.predictions[0].bytesBase64Encoded;
+        function displayGeneratedImage(base64Image) {
+            const imageContainer = document.getElementById('image-container');
+            if (base64Image) {
+                imageContainer.innerHTML = `<img src="data:image/png;base64,${base64Image}" alt="Visualización del diseño" class="rounded-lg object-cover shadow-lg max-h-[400px] animate-fade-in" />`;
             } else {
-                return null;
+                imageContainer.innerHTML = `<p class="text-center text-red-400 p-8">No se pudo generar la visualización del diseño. Inténtalo de nuevo.</p>`;
             }
         }
         
@@ -490,22 +440,12 @@
             button.disabled = true;
             button.innerHTML = '<div class="button-loader"></div>';
             try {
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`;
-                const detailsPrompt = `Basado en el concepto de diseño "${title}" (${description}), genera una lista de sugerencias concretas. Responde con un objeto JSON con tres propiedades: "materials" (array de 3-4 materiales específicos, incluyendo tipos de madera de YAN'Z SMART WOOD), "furniture" (array de 3-4 piezas de mobiliario clave), y "palette" (array de 4 objetos de color, cada uno con "name" y "hex").`;
-                const payload = {
-                    contents: [{ role: "user", parts: [{ text: detailsPrompt }] }],
-                    generationConfig: { responseMimeType: "application/json", responseSchema: { type: "OBJECT", properties: { "materials": { "type": "ARRAY", "items": { "type": "STRING" } }, "furniture": { "type": "ARRAY", "items": { "type": "STRING" } }, "palette": { "type": "ARRAY", "items": { "type": "OBJECT", "properties": { "name": { "type": "STRING" }, "hex": { "type": "STRING" } }, "required": ["name", "hex"] } } }, required: ["materials", "furniture", "palette"] } }
-                };
-                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                if (!response.ok) throw new Error(`La API de detalles respondió con un error: ${response.status}`);
-                const result = await response.json();
-                if (result.candidates?.[0]?.content?.parts?.[0]) {
-                    const details = JSON.parse(result.candidates[0].content.parts[0].text);
-                    displayDetails(details);
-                    document.getElementById('details-button-container').style.display = 'none';
-                } else {
-                    throw new Error("No se pudieron generar los detalles del diseño.");
-                }
+                const response = await callVercelAPI({ title, description, task: 'get_details' });
+                if(response.error) throw new Error(response.error);
+                
+                displayDetails(response.details);
+                document.getElementById('details-button-container').style.display = 'none';
+
             } catch (err) {
                 console.error("Error al obtener detalles:", err);
                 document.getElementById('details-container').innerHTML = `<p class="text-center text-red-400 text-sm">No se pudieron cargar los detalles.</p>`;
@@ -550,3 +490,118 @@
     </script>
 </body>
 </html>
+```
+
+---
+
+### 2. Código `api/generate.js` (Nuevo)
+
+
+```javascript
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+export const config = {
+  runtime: 'edge',
+};
+
+export default async function handler(req) {
+  if (req.method !== 'POST') {
+    return new Response(JSON.stringify({ error: 'Method Not Allowed' }), {
+      status: 405,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  try {
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const body = await req.json();
+    const { prompt, task, title, description } = body;
+
+    if (!task) {
+        throw new Error("No se especificó una tarea.");
+    }
+    
+    // --- TASK: FULL GENERATION (TEXT + IMAGE) ---
+    if (task === 'full_generation') {
+        if (!prompt) throw new Error("No se recibió ningún prompt.");
+
+        // 1. Safety Check
+        const moderationModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+        const moderationPrompt = `Does the following prompt relate to interior/exterior design, furniture (like for kitchens, TVs), materials (like wood, synthetic floors, ceramic, granite), or construction elements (like gypsum, lighting, electricity)? Answer only with "yes" or "no". Unrelated topics are things like people, animals, characters, or specific objects not related to home design.\n\nPrompt: "${prompt}"`;
+        const moderationResult = await moderationModel.generateContent(moderationPrompt);
+        const moderationResponse = await moderationResult.response;
+        const answer = moderationResponse.text().trim().toLowerCase();
+
+        if (!answer.includes('yes')) {
+            return new Response(JSON.stringify({ type: 'safety_violation' }), {
+                status: 200,
+                headers: { 'Content-Type': 'application/json' },
+            });
+        }
+        
+        // 2. Text Generation
+        const textModel = genAI.getGenerativeModel({
+            model: "gemini-1.5-flash-latest",
+            systemInstruction: `Eres "Aria", una experta asesora de diseño de interiores para "YAN'Z SMART WOOD". Tu especialidad es la madera inteligente y el diseño moderno. Tu objetivo es inspirar a los clientes. Responde con un objeto JSON con "title" (máx. 5 palabras) y "description" (3-5 frases sobre ambiente, materiales, iluminación y muebles).`,
+        });
+        const textGenerationResult = await textModel.generateContent(prompt);
+        const textResponse = await textGenerationResult.response;
+        const textResult = JSON.parse(textResponse.text());
+
+        // 3. Image Generation
+        const imageModel = genAI.getGenerativeModel({ model: "imagen-3.0-generate-002" });
+        const imagePrompt = `Fotografía profesional de diseño de interiores con efectos visuales cinematográficos, 8k, fotorrealista. Concepto: "${textResult.title}". Estilo: ${prompt}. Descripción: ${textResult.description}`;
+        const imageGenerationResult = await imageModel.generateContent(imagePrompt);
+        const imageResponse = await imageGenerationResult.response;
+        const imageResult = imageResponse.candidates[0].content.parts[0].text; // Imagen is returned as text (base64)
+        
+        return new Response(JSON.stringify({ type: 'success', textResult, imageResult }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+        });
+    }
+
+    // --- TASK: IMAGE REGENERATION (FX) ---
+    if (task === 'image_regeneration') {
+        if (!prompt) throw new Error("No se recibió ningún prompt para regenerar imagen.");
+        const imageModel = genAI.getGenerativeModel({ model: "imagen-3.0-generate-002" });
+        const imageGenerationResult = await imageModel.generateContent(prompt);
+        const imageResponse = await imageGenerationResult.response;
+        const imageResult = imageResponse.candidates[0].content.parts[0].text;
+        
+        return new Response(JSON.stringify({ type: 'success', imageResult }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+        });
+    }
+
+    // --- TASK: GET DETAILS (YAN'Z IDEAS) ---
+    if (task === 'get_details') {
+        if (!title || !description) throw new Error("Faltan datos para obtener detalles.");
+        const detailsModel = genAI.getGenerativeModel({
+            model: "gemini-1.5-flash-latest",
+        });
+        const detailsPrompt = `Basado en el concepto de diseño "${title}" (${description}), genera una lista de sugerencias concretas. Responde con un objeto JSON con tres propiedades: "materials" (array de 3-4 materiales específicos, incluyendo tipos de madera de YAN'Z SMART WOOD), "furniture" (array de 3-4 piezas de mobiliario clave), y "palette" (array de 4 objetos de color, cada uno con "name" y "hex").`;
+        const detailsGenerationResult = await detailsModel.generateContent(detailsPrompt);
+        const detailsResponse = await detailsGenerationResult.response;
+        const details = JSON.parse(detailsResponse.text());
+
+        return new Response(JSON.stringify({ type: 'success', details }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+        });
+    }
+
+
+    throw new Error("Tarea no reconocida.");
+
+
+  } catch (error) {
+    console.error(error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+}
+                       
