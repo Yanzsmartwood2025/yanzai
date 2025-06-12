@@ -1,61 +1,107 @@
-// Importa la librería oficial de Google
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Configuración de la API
+// Configuración para que funcione en Vercel
 export const config = {
-  runtime: 'edge', // Usa el runtime de Vercel para máxima velocidad
+  runtime: 'edge',
 };
 
-// Esta es la función principal que se ejecuta cuando se llama a /api/generate
+// Esta es la función principal que se ejecuta cuando la llamas desde tu página
 export default async function handler(req) {
-  try {
-    // 1. Leer la llave secreta desde las variables de entorno de Vercel
-    //    Esta es la parte más importante y la que probablemente está fallando.
-    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
-
-    // 2. Obtener el prompt que envió el usuario desde la página web
-    const { prompt } = await req.json();
-
-    // Si no hay prompt, devuelve un error
-    if (!prompt) {
-      return new Response(JSON.stringify({ error: "No se recibió ningún prompt." }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-
-    // 3. Preparar y llamar al modelo de IA de Google
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
-    
-    // El prompt que le damos a la IA, diciéndole cómo debe comportarse
-    const fullPrompt = `
-      Eres "Aria", una experta asesora de diseño de interiores para la empresa "YAN'Z SMART WOOD", especializada en muebles de madera de alta gama.
-      Un cliente ha descrito su visión: "${prompt}".
-
-      Tu tarea es responder con un título inspirador y una descripción detallada.
-      La descripción debe presentar el concepto de forma atractiva y profesional, mencionando materiales, paleta de colores, iluminación y tipos de muebles, destacando siempre la elegancia y la calidad de la madera.
-    `;
-
-    const result = await model.generateContent(fullPrompt);
-    const response = await result.response;
-    const text = response.text();
-
-    // 4. Procesar la respuesta de la IA para enviarla como JSON
-    //    Asumimos que la IA devuelve el título en la primera línea.
-    const lines = text.split('\n');
-    const title = lines[0].replace('Título: ', '').trim();
-    const description = lines.slice(1).join('\n').trim();
-
-    // 5. Devolver el resultado a la página web
-    return new Response(JSON.stringify({ title, description }), {
-      status: 200,
+  // Solo permitir peticiones de tipo POST
+  if (req.method !== 'POST') {
+    return new Response(JSON.stringify({ error: 'Method Not Allowed' }), {
+      status: 405,
       headers: { 'Content-Type': 'application/json' },
     });
+  }
+
+  try {
+    // 1. Conectar a la IA usando tu llave secreta de Vercel
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const body = await req.json();
+    const { prompt, task, title, description } = body;
+
+    if (!task) {
+        throw new Error("No se especificó una tarea.");
+    }
+    
+    // TAREA: Generar un concepto completo (Texto + Imagen)
+    if (task === 'full_generation') {
+        if (!prompt) throw new Error("No se recibió ningún prompt.");
+
+        // Paso A: Filtro de seguridad
+        const moderationModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+        const moderationPrompt = `Does the following prompt relate to interior/exterior design, furniture (like for kitchens, TVs), materials (like wood, synthetic floors, ceramic, granite), or construction elements (like gypsum, lighting, electricity)? Answer only with "yes" or "no". Unrelated topics are things like people, animals, characters, or specific objects not related to home design.\n\nPrompt: "${prompt}"`;
+        const moderationResult = await moderationModel.generateContent(moderationPrompt);
+        const moderationResponse = await moderationResult.response;
+        const answer = moderationResponse.text().trim().toLowerCase();
+
+        if (!answer.includes('yes')) {
+            return new Response(JSON.stringify({ type: 'safety_violation' }), {
+                status: 200,
+                headers: { 'Content-Type': 'application/json' },
+            });
+        }
+        
+        // Paso B: Generar la descripción y el título
+        const textModel = genAI.getGenerativeModel({
+            model: "gemini-1.5-flash-latest",
+            systemInstruction: `Eres "Aria", una experta asesora de diseño de interiores para "YAN'Z SMART WOOD". Tu especialidad es la madera inteligente y el diseño moderno. Tu objetivo es inspirar a los clientes. Responde con un objeto JSON con "title" (máx. 5 palabras) y "description" (3-5 frases sobre ambiente, materiales, iluminación y muebles).`,
+        });
+        const textGenerationResult = await textModel.generateContent(prompt);
+        const textResponse = await textGenerationResult.response;
+        const textResult = JSON.parse(textResponse.text());
+
+        // Paso C: Generar la imagen con FX
+        const imageModel = genAI.getGenerativeModel({ model: "imagen-3.0-generate-002" });
+        const imagePrompt = `Fotografía profesional de diseño de interiores con efectos visuales cinematográficos, 8k, fotorrealista. Concepto: "${textResult.title}". Estilo: ${prompt}. Descripción: ${textResult.description}`;
+        const imageGenerationResult = await imageModel.generateContent(imagePrompt);
+        const imageResponse = await imageGenerationResult.response;
+        const imageResult = imageResponse.candidates[0].content.parts[0].text;
+        
+        return new Response(JSON.stringify({ type: 'success', textResult, imageResult }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+        });
+    }
+
+    // TAREA: Regenerar la imagen con nuevos FX
+    if (task === 'image_regeneration') {
+        if (!prompt) throw new Error("No se recibió ningún prompt para regenerar imagen.");
+        const imageModel = genAI.getGenerativeModel({ model: "imagen-3.0-generate-002" });
+        const imageGenerationResult = await imageModel.generateContent(prompt);
+        const imageResponse = await imageGenerationResult.response;
+        const imageResult = imageResponse.candidates[0].content.parts[0].text;
+        
+        return new Response(JSON.stringify({ type: 'success', imageResult }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+        });
+    }
+
+    // TAREA: Obtener las ideas de YAN'Z
+    if (task === 'get_details') {
+        if (!title || !description) throw new Error("Faltan datos para obtener detalles.");
+        const detailsModel = genAI.getGenerativeModel({
+            model: "gemini-1.5-flash-latest",
+        });
+        const detailsPrompt = `Basado en el concepto de diseño "${title}" (${description}), genera una lista de sugerencias concretas. Responde con un objeto JSON con tres propiedades: "materials" (array de 3-4 materiales específicos, incluyendo tipos de madera de YAN'Z SMART WOOD), "furniture" (array de 3-4 piezas de mobiliario clave), y "palette" (array de 4 objetos de color, cada uno con "name" y "hex").`;
+        const detailsGenerationResult = await detailsModel.generateContent(detailsPrompt);
+        const detailsResponse = await detailsGenerationResult.response;
+        const details = JSON.parse(detailsResponse.text());
+
+        return new Response(JSON.stringify({ type: 'success', details }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+        });
+    }
+
+    // Si la tarea no es reconocida
+    throw new Error("Tarea no reconocida.");
 
   } catch (error) {
-    // 6. Si algo sale mal, imprime el error en los logs de Vercel y avisa al usuario
-    console.error("Error en la función de Vercel:", error);
-    return new Response(JSON.stringify({ error: "Hubo un error al contactar a la IA." }), {
+    console.error(error);
+    return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
