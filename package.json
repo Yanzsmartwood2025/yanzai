@@ -1,8 +1,8 @@
 {
-  "name": "yanz-ai-advisor-vercel",
-  "version": "1.0.0",
-  "description": "Serverless function for YAN'Z AI Advisor",
-  "dependencies": {
-    "@google/generative-ai": "^0.14.1"
+  "functions": {
+    "api/generate.js": {
+      "runtime": "edge"
+    }
   }
 }
+
