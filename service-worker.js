@@ -1,12 +1,14 @@
-// Este service worker simple permite que la aplicación sea instalable (PWA).
+// Este service worker simple permite que la aplicación sea instalable (PWA)
+// al registrarse correctamente, pero no interfiere con las solicitudes de red.
 
 self.addEventListener('install', (event) => {
-  console.log('Service Worker: Instalado');
-  // Opcional: precachear archivos importantes aquí si se necesita funcionalidad offline.
+  console.log('Service Worker: Instalado y listo.');
+  // La presencia de este archivo y este evento es suficiente para los criterios de instalación de PWA.
 });
 
-self.addEventListener('fetch', (event) => {
-  // Para esta app, usaremos una estrategia de "network first".
-  // Intenta obtener el recurso de la red, y si falla, no hace nada (requiere conexión).
-  event.respondWith(fetch(event.request));
+self.addEventListener('activate', (event) => {
+  console.log('Service Worker: Activado.');
 });
+
+// Hemos eliminado el evento 'fetch' para evitar que interfiera
+// con las respuestas del servidor, lo que solucionará el problema de la descarga.
