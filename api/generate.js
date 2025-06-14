@@ -1,10 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Configuración para que funcione en Vercel
-export const config = {
-  runtime: 'edge',
-};
-
 // Esta es la función principal que se ejecuta cuando la llamas desde tu página
 export default async function handler(req) {
   // Solo permitir peticiones de tipo POST
